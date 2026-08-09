@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Aeonik";
+  src: url("./assets/fonts/Aeonik-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("./assets/fonts/Aeonik-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("./assets/fonts/Aeonik-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("./assets/fonts/Aeonik-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Aeonik", "Inter", system-ui, -apple-system, sans-serif;
+
+  --color-ink: #17151b;
+  --color-ink-soft: #4a4750;
+  --color-cream: #ffffff;
+  --color-surface: #f3f1ee;
+  --color-muted: #8d8994;
+  --color-border: rgba(23, 21, 27, 0.08);
+  --color-ring: #185cf7;
+  --color-accent: #185cf7;
+  --color-accent-soft: #e7ecff;
+
+  --radius-card: 3rem;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(23, 21, 27, 0.04), 0 12px 32px -12px rgba(23, 21, 27, 0.18);
+  --shadow-float: 0 8px 24px -8px rgba(23, 21, 27, 0.25);
+}
+
+/*
+ * Scoped dark mode: flips the solid content-card surface (Maestro/ByteRise/
+ * Work/Skills cards, dialogs) and their text. The photo background and glass
+ * cards are unaffected — they already adapt to whatever image sits behind
+ * them, in both themes.
+ */
+.dark {
+  --color-ink: #f5f4f7;
+  --color-ink-soft: #c7c3ce;
+  --color-cream: #1c1a21;
+  --color-surface: #26232c;
+  --color-muted: #9a95a3;
+  --color-border: rgba(255, 255, 255, 0.08);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background-color: var(--color-surface);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: white;
+  }
+}
