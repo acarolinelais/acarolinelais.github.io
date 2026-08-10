@@ -2,7 +2,7 @@ import type { IconName } from '@/assets/icons'
 
 export type TechIconName = Extract<
   IconName,
-  'python' | 'react' | 'tailwind' | 'cryptoWallet' | 'codeMerge'
+  'python' | 'react' | 'tailwind' | 'codeMerge' | 'postgresql'
 >
 
 export interface Project {

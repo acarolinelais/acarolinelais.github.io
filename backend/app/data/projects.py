@@ -35,4 +35,13 @@ PROJECTS: list[Project] = [
         link=None,
         status="coming-soon",
     ),
+    Project(
+        slug="careops",
+        title="CareOps",
+        subtitle="ERP Platform",
+        description="CareOps is built to help medical centers take full control over their administrative and operational processes - from finances and staffing to scheduling and inventory. Instead of juggling multiple tools, teams get a unified system designed specifically for healthcare workflows.",
+        tech=["python", "react", "postgresql", "tailwind"],
+        link=None,
+        status="coming-soon",
+    ),
 ]

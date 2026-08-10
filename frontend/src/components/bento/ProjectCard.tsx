@@ -34,21 +34,27 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
               target="_blank"
               rel="noreferrer"
               aria-label={`Open ${project.title}`}
-              className="flex size-10 items-center justify-center rounded-full bg-surface transition-colors group-hover:bg-ink"
+              className="group/arrow flex size-10 items-center justify-center rounded-full bg-surface transition-colors hover:bg-ink"
             >
               <img
                 src={icons.arrow}
                 alt=""
-                className="size-4 transition-[filter] group-hover:invert"
+                className="size-4 transition-[filter] group-hover/arrow:invert"
               />
             </a>
           ) : (
-            <span
-              aria-hidden
-              className="flex size-12 items-center justify-center rounded-full bg-surface opacity-100"
+            <button
+              type="button"
+              disabled
+              aria-label="No link available"
+              className="group/arrow flex size-12 items-center justify-center rounded-full bg-surface transition-colors hover:bg-ink"
             >
-              <img src={icons.arrow} alt="" className="size-4" />
-            </span>
+              <img
+                src={icons.arrow}
+                alt=""
+                className="size-4 transition-[filter] group-hover/arrow:invert"
+              />
+            </button>
           )}
         </div>
       </div>

@@ -1,7 +1,5 @@
 import arrow from './arrow.png'
-import clock from './clock.png'
 import codeMerge from './code-merge.svg'
-import cryptoWallet from './crypto-wallet.svg'
 import cube from './cube.png'
 import github from './github.svg'
 import homeBlack from './home-black.png'
@@ -10,6 +8,7 @@ import instagram from './instagram.svg'
 import linkedin from './linkedin.svg'
 import mail from './mail.svg'
 import moonStars from './moon-stars.svg'
+import postgresql from './postgresql.svg'
 import python from './python.svg'
 import react from './react.svg'
 import skillsBlack from './skills-black.png'
@@ -22,9 +21,7 @@ import workWhite from './work-white.png'
 
 export const icons = {
   arrow,
-  clock,
   codeMerge,
-  cryptoWallet,
   cube,
   github,
   homeBlack,
@@ -33,6 +30,7 @@ export const icons = {
   linkedin,
   mail,
   moonStars,
+  postgresql,
   python,
   react,
   skillsBlack,
