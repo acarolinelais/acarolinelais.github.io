@@ -3,7 +3,7 @@ from typing import Literal
 from pydantic import BaseModel, EmailStr, Field
 
 TechIcon = Literal[
-    "python", "react", "tailwind", "cryptoWallet", "codeMerge", "cubeAlt"
+    "python", "react", "tailwind", "cryptoWallet", "codeMerge", "cubeAlt", "postgresql"
 ]
 
 IconName = Literal[

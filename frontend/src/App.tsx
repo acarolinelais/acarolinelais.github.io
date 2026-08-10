@@ -21,7 +21,7 @@ function App() {
       <div className="grid">
         <AnimatePresence mode="sync" initial={false}>
           <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home destination={location.pathname} />} />
             <Route path="/work" element={<Work />} />
             <Route path="/skills" element={<Skills />} />
           </Routes>

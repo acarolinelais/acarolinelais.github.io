@@ -1,4 +1,3 @@
-import { icons } from '@/assets/icons'
 import { cn } from '@/lib/utils'
 
 interface DateCardProps {
@@ -26,10 +25,7 @@ export function DateCard({ className }: DateCardProps) {
       )}
     >
       <div className="flex items-start justify-between">
-        <span className="text-md font-regular text-white">{dayMonth}</span>
-        <span className="flex items-center justify-center">
-          <img src={icons.clock} alt="" aria-hidden className="size-5" />
-        </span>
+        <span className="text-x font-regular text-white">{dayMonth}</span>
       </div>
       <div>
         <span className="block text-3xl font-regular text-white">

@@ -41,17 +41,28 @@ export function WorkProjectCard({ project }: { project: Project }) {
             href={project.link}
             target="_blank"
             rel="noreferrer"
-            className="flex size-10 items-center justify-center rounded-full bg-surface transition-colors hover:bg-ink"
+            aria-label={`Open ${project.title}`}
+            className="group/arrow flex size-10 items-center justify-center rounded-full bg-surface transition-colors hover:bg-ink"
           >
-            <img src={icons.arrow} alt="" className="size-4" />
+            <img
+              src={icons.arrow}
+              alt=""
+              className="size-4 transition-[filter] group-hover/arrow:invert"
+            />
           </a>
         ) : (
-          <span
-            aria-hidden
-            className="flex size-10 items-center justify-center rounded-full bg-surface opacity-50"
+          <button
+            type="button"
+            disabled
+            aria-label="No link available"
+            className="group/arrow flex size-10 items-center justify-center rounded-full bg-surface opacity-50 transition-colors hover:bg-ink hover:opacity-100"
           >
-            <img src={icons.arrow} alt="" className="size-4" />
-          </span>
+            <img
+              src={icons.arrow}
+              alt=""
+              className="size-4 transition-[filter] group-hover/arrow:invert"
+            />
+          </button>
         )}
       </div>
     </article>

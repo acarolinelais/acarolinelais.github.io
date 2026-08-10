@@ -13,7 +13,7 @@ export function CircleImageBadge({ className }: CircleImageBadgeProps) {
         <img
           src={images.avatar}
           alt="Caroline Lais"
-          className="size-40 object-scale-down"
+          className="size-45 object-scale-down"
         />
       </div>
       <span className="absolute left-2 top-4 flex size-10 items-center justify-center rounded-full bg-white shadow-float">

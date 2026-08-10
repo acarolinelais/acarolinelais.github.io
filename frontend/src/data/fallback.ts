@@ -35,6 +35,16 @@ export const fallbackProjects: Project[] = [
     link: null,
     status: 'coming-soon',
   },
+  {
+    slug: 'careops',
+    title: 'CareOps',
+    subtitle: 'ERP Platform',
+    description:
+      'CareOps is built to help medical centers take full control over their administrative and operational processes - from finances and staffing to scheduling and inventory. Instead of juggling multiple tools, teams get a unified system designed specifically for healthcare workflows.',
+    tech: ['python', 'react', 'postgresql', 'tailwind'],
+    link: null,
+    status: 'coming-soon',
+  },
 ]
 
 export const fallbackSkillGroups: SkillGroup[] = [
@@ -55,8 +65,8 @@ export const fallbackSkillGroups: SkillGroup[] = [
 ]
 
 export const fallbackSocials: SocialLink[] = [
-  { id: 'linkedin', label: 'LinkedIn', href: 'https://linkedin.com', icon: 'linkedin' },
-  { id: 'instagram', label: 'Instagram', href: 'https://instagram.com', icon: 'instagram' },
-  { id: 'github', label: 'GitHub', href: 'https://github.com', icon: 'github' },
-  { id: 'mail', label: 'Email', href: 'mailto:hello@example.com', icon: 'mail' },
+  { id: 'linkedin', label: 'LinkedIn', href: 'https://linkedin.com/carolinelais', icon: 'linkedin' },
+  { id: 'instagram', label: 'Instagram', href: 'https://instagram.com/acarolinelais', icon: 'instagram' },
+  { id: 'github', label: 'GitHub', href: 'https://github.com/acarolinelais', icon: 'github' },
+  { id: 'mail', label: 'Email', href: 'mailto:carolinelaisgs@gmail.com', icon: 'mail' },
 ]
