@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
 import { icons } from '@/assets/icons'
@@ -12,19 +13,29 @@ export function Skills() {
   }, [])
 
   return (
-    <div className="space-y-10">
-      <div className="max-w-xl space-y-3 text-[#17151b] [text-shadow:0_1px_16px_rgba(255,255,255,0.5)]">
+    <div className="[grid-area:1/1] space-y-10">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -8 }}
+        transition={{ duration: 0.3 }}
+        className="max-w-xl space-y-3 text-[#17151b] [text-shadow:0_1px_16px_rgba(255,255,255,0.5)]"
+      >
         <h1 className="text-3xl font-medium">Skills</h1>
         <p className="text-[#4a4750]">
           Frontend interfaces and backend automation, held together by clean,
           well-tested code.
         </p>
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        {groups.map((group) => (
-          <article
+        {groups.map((group, i) => (
+          <motion.article
             key={group.id}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, delay: i * 0.05 }}
             className="rounded-card bg-cream p-7 shadow-card"
           >
             <h3 className="text-lg font-medium text-ink">{group.title}</h3>
@@ -41,7 +52,7 @@ export function Skills() {
                 </span>
               ))}
             </div>
-          </article>
+          </motion.article>
         ))}
       </div>
     </div>

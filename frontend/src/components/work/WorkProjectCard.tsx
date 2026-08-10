@@ -43,14 +43,14 @@ export function WorkProjectCard({ project }: { project: Project }) {
             rel="noreferrer"
             className="flex size-10 items-center justify-center rounded-full bg-surface transition-colors hover:bg-ink"
           >
-            <img src={icons.arrowUpRight} alt="" className="size-4" />
+            <img src={icons.arrow} alt="" className="size-4" />
           </a>
         ) : (
           <span
             aria-hidden
             className="flex size-10 items-center justify-center rounded-full bg-surface opacity-50"
           >
-            <img src={icons.arrowUpRight} alt="" className="size-4" />
+            <img src={icons.arrow} alt="" className="size-4" />
           </span>
         )}
       </div>

@@ -18,10 +18,10 @@ export function BentoCard({
   surface = 'white',
 }: BentoCardProps) {
   const base = cn(
-    'group relative flex flex-col overflow-hidden rounded-card shadow-card transition-transform duration-300 ease-out hover:-translate-y-1',
+    'group relative flex flex-col overflow-hidden rounded-card transition-transform duration-300 ease-out hover:-translate-y-1',
     surface === 'white' && 'bg-cream',
     surface === 'glass' &&
-      'border border-white/20 bg-white/10 backdrop-blur-xl',
+      'border border-white/20 bg-black/5 backdrop-blur-lg',
     className,
   )
 

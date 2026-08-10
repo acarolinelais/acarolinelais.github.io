@@ -1,3 +1,4 @@
+import { icons } from '@/assets/icons'
 import { cn } from '@/lib/utils'
 
 interface DateCardProps {
@@ -20,16 +21,21 @@ export function DateCard({ className }: DateCardProps) {
   return (
     <div
       className={cn(
-        'relative flex flex-col justify-between overflow-hidden rounded-card border border-white/20 bg-white/10 p-6 shadow-card backdrop-blur-xl',
+        'relative flex flex-col justify-between overflow-hidden rounded-card border border-white/20 bg-black/5 p-6 backdrop-blur-lg',
         className,
       )}
     >
-      <span className="text-sm font-medium text-cream/85">{dayMonth}</span>
+      <div className="flex items-start justify-between">
+        <span className="text-md font-regular text-white">{dayMonth}</span>
+        <span className="flex items-center justify-center">
+          <img src={icons.clock} alt="" aria-hidden className="size-5" />
+        </span>
+      </div>
       <div>
-        <span className="block text-3xl font-medium text-cream">
+        <span className="block text-3xl font-regular text-white">
           {weekday}
         </span>
-        <span className="text-lg font-medium text-cream/80">{time}</span>
+        <span className="text-4xl font-regular text-white">{time}</span>
       </div>
     </div>
   )

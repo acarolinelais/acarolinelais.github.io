@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 
 import { icons } from '@/assets/icons'
@@ -27,7 +26,6 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const { pathname } = useLocation()
-  const [hovered, setHovered] = useState<string | null>(null)
 
   return (
     <nav
@@ -38,7 +36,6 @@ export function Sidebar() {
         {NAV_ITEMS.map((item) => {
           const isActive =
             item.to === '/' ? pathname === '/' : pathname.startsWith(item.to)
-          const isWhite = isActive || hovered === item.to
 
           return (
             <li key={item.to}>
@@ -46,8 +43,6 @@ export function Sidebar() {
                 to={item.to}
                 end={item.to === '/'}
                 aria-label={item.label}
-                onMouseEnter={() => setHovered(item.to)}
-                onMouseLeave={() => setHovered(null)}
                 className={cn(
                   'group flex h-11 w-fit items-center overflow-hidden rounded-full shadow-card backdrop-blur-md transition-shadow duration-300 hover:shadow-float',
                   isActive ? 'bg-accent shadow-float' : 'bg-white',
@@ -55,7 +50,7 @@ export function Sidebar() {
               >
                 <span className="flex size-11 shrink-0 items-center justify-center">
                   <img
-                    src={isWhite ? item.iconWhite : item.iconBlack}
+                    src={isActive ? item.iconWhite : item.iconBlack}
                     alt=""
                     aria-hidden
                     className="size-5 object-contain"
