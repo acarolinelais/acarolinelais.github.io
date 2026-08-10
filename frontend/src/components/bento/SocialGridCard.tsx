@@ -9,17 +9,17 @@ interface SocialGridCardProps {
 }
 
 const tileClass =
-  'flex items-center justify-center rounded-2xl bg-white/15 transition-colors hover:bg-white/25'
+  'flex items-center justify-center rounded-full bg-white/15 transition-colors hover:bg-white/25'
 
 export function SocialGridCard({ socials, className }: SocialGridCardProps) {
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-card border border-white/20 bg-white/10 shadow-card backdrop-blur-xl',
+        'relative overflow-hidden rounded-card border border-white/20 bg-black/5 backdrop-blur-lg',
         className,
       )}
     >
-      <div className="grid size-full grid-cols-2 grid-rows-2 gap-3 p-4">
+      <div className="grid size-full grid-cols-2 grid-rows-2 gap-4 p-6">
         {socials.map((social) =>
           social.icon === 'mail' ? (
             <ContactDialog key={social.id}>
@@ -28,7 +28,7 @@ export function SocialGridCard({ socials, className }: SocialGridCardProps) {
                 aria-label={social.label}
                 className={tileClass}
               >
-                <img src={icons.mail} alt="" className="size-5 invert" />
+                <img src={icons.mail} alt="" className="size-8 invert" />
               </button>
             </ContactDialog>
           ) : (
@@ -40,7 +40,7 @@ export function SocialGridCard({ socials, className }: SocialGridCardProps) {
               aria-label={social.label}
               className={tileClass}
             >
-              <img src={icons[social.icon]} alt="" className="size-5 invert" />
+              <img src={icons[social.icon]} alt="" className="size-8 invert" />
             </a>
           ),
         )}

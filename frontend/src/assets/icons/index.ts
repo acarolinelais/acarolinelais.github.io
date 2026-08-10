@@ -1,4 +1,5 @@
-import arrowUpRight from './arrow-up-right.svg'
+import arrow from './arrow.png'
+import clock from './clock.png'
 import codeMerge from './code-merge.svg'
 import cryptoWallet from './crypto-wallet.svg'
 import cube from './cube.png'
@@ -13,13 +14,15 @@ import python from './python.svg'
 import react from './react.svg'
 import skillsBlack from './skills-black.png'
 import skillsWhite from './skills-white.png'
-import starRing from './star-ring.svg'
+import starRing from './star-ring.png'
+import sun from './sun.svg'
 import tailwind from './tailwind.svg'
 import workBlack from './work-black.png'
 import workWhite from './work-white.png'
 
 export const icons = {
-  arrowUpRight,
+  arrow,
+  clock,
   codeMerge,
   cryptoWallet,
   cube,
@@ -35,6 +38,7 @@ export const icons = {
   skillsBlack,
   skillsWhite,
   starRing,
+  sun,
   tailwind,
   workBlack,
   workWhite,

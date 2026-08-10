@@ -12,8 +12,8 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
     <BentoCard className={className}>
       <div className="flex flex-1 flex-col justify-between p-6">
         <div>
-          <h3 className="text-xl font-regular  text-ink">{project.title}</h3>
-          <p className="mt-1 text-sm text-muted">{project.subtitle}</p>
+          <h3 className="text-xl font-regular text-ink">{project.title}</h3>
+          <p className="text-sm text-muted">{project.subtitle}</p>
         </div>
 
         <div className="mt-6 flex items-center justify-between">
@@ -21,9 +21,9 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
             {project.tech.map((tech) => (
               <span
                 key={tech}
-                className="flex size-9 items-center justify-center rounded-full bg-surface ring-4 ring-white"
+                className="flex size-12 items-center justify-center rounded-full bg-surface ring-4 ring-white"
               >
-                <img src={icons[tech]} alt="" className="size-4" />
+                <img src={icons[tech]} alt="" className="size-6" />
               </span>
             ))}
           </div>
@@ -37,7 +37,7 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
               className="flex size-10 items-center justify-center rounded-full bg-surface transition-colors group-hover:bg-ink"
             >
               <img
-                src={icons.arrowUpRight}
+                src={icons.arrow}
                 alt=""
                 className="size-4 transition-[filter] group-hover:invert"
               />
@@ -45,9 +45,9 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
           ) : (
             <span
               aria-hidden
-              className="flex size-10 items-center justify-center rounded-full bg-surface opacity-50"
+              className="flex size-12 items-center justify-center rounded-full bg-surface opacity-100"
             >
-              <img src={icons.arrowUpRight} alt="" className="size-4" />
+              <img src={icons.arrow} alt="" className="size-4" />
             </span>
           )}
         </div>
