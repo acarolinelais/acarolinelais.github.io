@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { icons } from '@/assets/icons'
+import { cn } from '@/lib/utils'
 
 const STORAGE_KEY = 'theme'
 type Theme = 'light' | 'dark'
@@ -26,14 +27,22 @@ export function ThemeToggle() {
       aria-label="Toggle dark mode"
       aria-pressed={isDark}
       onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
-      className="flex size-11 items-center justify-center rounded-full border border-white/20 bg-black/5 backdrop-blur-lg transition-all hover:scale-105"
+      className="relative flex size-11 items-center justify-center rounded-full transition-all hover:scale-105"
     >
-      <img
-        src={isDark ? icons.sun : icons.moonStars}
-        alt=""
-        aria-hidden
-        className="size-5 invert"
-      />
+      <div
+        className={cn(
+          'absolute inset-0 flex items-center justify-center rounded-full backdrop-blur-xl',
+          isDark ? 'bg-black/5' : 'bg-white/5',
+        )}
+      >
+        <img
+          src={isDark ? icons.sun : icons.moonStars}
+          alt=""
+          aria-hidden
+          className="size-5 brightness-0 invert"
+        />
+      </div>
+      <div className="border-ring pointer-events-none absolute inset-0 rounded-full" />
     </button>
   )
 }

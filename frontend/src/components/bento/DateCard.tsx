@@ -20,19 +20,22 @@ export function DateCard({ className }: DateCardProps) {
   return (
     <div
       className={cn(
-        'relative flex flex-col justify-between overflow-hidden rounded-card border border-white/20 bg-black/5 p-6 backdrop-blur-lg',
+        'relative transition-transform duration-300 ease-out hover:-translate-y-1',
         className,
       )}
     >
-      <div className="flex items-start justify-between">
-        <span className="text-x font-regular text-white">{dayMonth}</span>
+      <div className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-card bg-white/5 p-8 backdrop-blur-xl">
+        <div className="flex items-start justify-between">
+          <span className="text-x font-regular text-white">{dayMonth}</span>
+        </div>
+        <div>
+          <span className="block text-3xl font-regular text-white">
+            {weekday}
+          </span>
+          <span className="text-4xl font-regular text-white">{time}</span>
+        </div>
       </div>
-      <div>
-        <span className="block text-3xl font-regular text-white">
-          {weekday}
-        </span>
-        <span className="text-4xl font-regular text-white">{time}</span>
-      </div>
+      <div className="border-ring pointer-events-none absolute inset-0 rounded-card" />
     </div>
   )
 }

@@ -4,24 +4,9 @@ import { icons } from '@/assets/icons'
 import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = [
-  {
-    to: '/',
-    label: 'Home',
-    iconBlack: icons.homeBlack,
-    iconWhite: icons.homeWhite,
-  },
-  {
-    to: '/work',
-    label: 'Work',
-    iconBlack: icons.workBlack,
-    iconWhite: icons.workWhite,
-  },
-  {
-    to: '/skills',
-    label: 'Skills',
-    iconBlack: icons.skillsBlack,
-    iconWhite: icons.skillsWhite,
-  },
+  { to: '/', label: 'Home', icon: icons.homeWhite },
+  { to: '/work', label: 'Work', icon: icons.workWhite },
+  { to: '/skills', label: 'Skills', icon: icons.skillsWhite },
 ]
 
 export function Sidebar() {
@@ -43,27 +28,26 @@ export function Sidebar() {
                 to={item.to}
                 end={item.to === '/'}
                 aria-label={item.label}
-                className={cn(
-                  'group flex h-11 w-fit items-center overflow-hidden rounded-full shadow-card backdrop-blur-md transition-shadow duration-300 hover:shadow-float',
-                  isActive ? 'bg-accent shadow-float' : 'bg-white',
-                )}
+                className="group relative flex h-11 w-fit items-center overflow-hidden rounded-full shadow-card transition-shadow duration-300 hover:shadow-float"
               >
-                <span className="flex size-11 shrink-0 items-center justify-center">
+                <span
+                  className={cn(
+                    'absolute inset-0',
+                    isActive ? 'bg-accent' : 'bg-white/5 backdrop-blur-xl',
+                  )}
+                />
+                <span className="border-ring pointer-events-none absolute inset-0 rounded-full" />
+                <span className="relative flex size-11 shrink-0 items-center justify-center">
                   <img
-                    src={isActive ? item.iconWhite : item.iconBlack}
+                    src={item.icon}
                     alt=""
                     aria-hidden
                     className="size-5 object-contain"
                   />
                 </span>
-                <span className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-300 ease-out group-hover:grid-cols-[1fr]">
+                <span className="relative grid grid-cols-[0fr] transition-[grid-template-columns] duration-300 ease-out group-hover:grid-cols-[1fr]">
                   <span className="overflow-hidden">
-                    <span
-                      className={cn(
-                        'block whitespace-nowrap pr-5 text-sm font-regular',
-                        isActive ? 'text-white' : 'text-ink',
-                      )}
-                    >
+                    <span className="block whitespace-nowrap pr-5 text-sm font-regular text-white">
                       {item.label}
                     </span>
                   </span>

@@ -17,21 +17,33 @@ export function BentoCard({
   href,
   surface = 'white',
 }: BentoCardProps) {
-  const base = cn(
-    'group relative flex flex-col overflow-hidden rounded-card transition-transform duration-300 ease-out hover:-translate-y-1',
-    surface === 'white' && 'bg-cream',
-    surface === 'glass' &&
-      'border border-white/20 bg-black/5 backdrop-blur-lg',
+  const outer = cn(
+    'group relative transition-transform duration-300 ease-out hover:-translate-y-1',
     className,
+  )
+
+  const content = (
+    <>
+      <div
+        className={cn(
+          'absolute inset-0 flex flex-col overflow-hidden rounded-card',
+          surface === 'white' && 'bg-cream',
+          surface === 'glass' && 'bg-white/5 backdrop-blur-xl',
+        )}
+      >
+        {children}
+      </div>
+      <div className="border-ring pointer-events-none absolute inset-0 rounded-card" />
+    </>
   )
 
   if (as === 'a' && href) {
     return (
-      <a href={href} className={base}>
-        {children}
+      <a href={href} className={outer}>
+        {content}
       </a>
     )
   }
 
-  return <div className={base}>{children}</div>
+  return <div className={outer}>{content}</div>
 }

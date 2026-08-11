@@ -8,7 +8,7 @@ export function TopBar({ page }: TopBarProps) {
   return (
     <header className="fixed inset-x-0 top-0 z-30">
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-ink/35 via-ink/10 to-transparent sm:h-32"
+        className="pointer-events-none absolute inset-x-0 top-0 h-28 sm:h-32"
         aria-hidden
       />
       <div className="relative flex items-start justify-between px-5 pt-6 sm:px-8 sm:pt-8 lg:px-10">

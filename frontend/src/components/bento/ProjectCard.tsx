@@ -10,7 +10,7 @@ interface ProjectCardProps {
 export function ProjectCard({ project, className }: ProjectCardProps) {
   return (
     <BentoCard className={className}>
-      <div className="flex flex-1 flex-col justify-between p-6">
+      <div className="flex flex-1 flex-col justify-between p-8">
         <div>
           <h3 className="text-xl font-regular text-ink">{project.title}</h3>
           <p className="text-sm text-muted">{project.subtitle}</p>
