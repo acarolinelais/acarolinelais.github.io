@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { icons } from '@/assets/icons'
-import { BentoCard } from '@/components/bento/BentoCard'
 import { CircleImageBadge } from '@/components/bento/CircleImageBadge'
 import { DateCard } from '@/components/bento/DateCard'
 import { IconShowcaseCard } from '@/components/bento/IconShowcaseCard'
 import { IntroCard } from '@/components/bento/IntroCard'
+import { NowPlayingCard } from '@/components/bento/NowPlayingCard'
 import { ProjectCard } from '@/components/bento/ProjectCard'
 import { SocialGridCard } from '@/components/bento/SocialGridCard'
 import { getProjects, getSocials } from '@/lib/api'
@@ -109,9 +109,9 @@ export function Home({ destination }: HomeProps) {
         </motion.div>
         <motion.div
           variants={scrollDownVariants}
-          className={cardClass('mt-4 lg:mt-3')}
+          className="aspect-[3/4] w-full mt-4 lg:mt-3"
         >
-          <BentoCard surface="glass" className="size-full" />
+          <NowPlayingCard className="size-full" />
         </motion.div>
         {thirdProject && (
           <ProjectSlot

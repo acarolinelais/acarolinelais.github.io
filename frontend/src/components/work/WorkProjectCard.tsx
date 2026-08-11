@@ -10,61 +10,64 @@ const STATUS_LABEL: Record<Project['status'], string> = {
 
 export function WorkProjectCard({ project }: { project: Project }) {
   return (
-    <article className="flex flex-col justify-between rounded-card bg-cream p-7 shadow-card transition-transform duration-300 ease-out hover:-translate-y-1">
-      <div>
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h3 className="text-xl font-medium text-ink">{project.title}</h3>
-            <p className="mt-1 text-sm text-muted">{project.subtitle}</p>
+    <article className="relative rounded-card shadow-card transition-transform duration-300 ease-out hover:-translate-y-1">
+      <div className="flex flex-col justify-between rounded-card bg-cream p-7">
+        <div>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="text-xl font-medium text-ink">{project.title}</h3>
+              <p className="mt-1 text-sm text-muted">{project.subtitle}</p>
+            </div>
+            <Badge variant="soft">{STATUS_LABEL[project.status]}</Badge>
           </div>
-          <Badge variant="soft">{STATUS_LABEL[project.status]}</Badge>
+          <p className="mt-4 text-sm leading-relaxed text-ink-soft">
+            {project.description}
+          </p>
         </div>
-        <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-          {project.description}
-        </p>
-      </div>
 
-      <div className="mt-6 flex items-center justify-between">
-        <div className="flex items-center -space-x-2">
-          {project.tech.map((tech) => (
-            <span
-              key={tech}
-              className="flex size-9 items-center justify-center rounded-full bg-surface ring-4 ring-white"
+        <div className="mt-6 flex items-center justify-between">
+          <div className="flex items-center -space-x-2">
+            {project.tech.map((tech) => (
+              <span
+                key={tech}
+                className="flex size-9 items-center justify-center rounded-full bg-surface ring-4 ring-white"
+              >
+                <img src={icons[tech]} alt="" className="size-4" />
+              </span>
+            ))}
+          </div>
+
+          {project.link ? (
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`Open ${project.title}`}
+              className="group/arrow flex size-10 items-center justify-center rounded-full bg-surface transition-colors hover:bg-ink"
             >
-              <img src={icons[tech]} alt="" className="size-4" />
-            </span>
-          ))}
+              <img
+                src={icons.arrow}
+                alt=""
+                className="size-4 transition-[filter] group-hover/arrow:invert"
+              />
+            </a>
+          ) : (
+            <button
+              type="button"
+              disabled
+              aria-label="No link available"
+              className="group/arrow flex size-10 items-center justify-center rounded-full bg-surface opacity-50 transition-colors hover:bg-ink hover:opacity-100"
+            >
+              <img
+                src={icons.arrow}
+                alt=""
+                className="size-4 transition-[filter] group-hover/arrow:invert"
+              />
+            </button>
+          )}
         </div>
-
-        {project.link ? (
-          <a
-            href={project.link}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={`Open ${project.title}`}
-            className="group/arrow flex size-10 items-center justify-center rounded-full bg-surface transition-colors hover:bg-ink"
-          >
-            <img
-              src={icons.arrow}
-              alt=""
-              className="size-4 transition-[filter] group-hover/arrow:invert"
-            />
-          </a>
-        ) : (
-          <button
-            type="button"
-            disabled
-            aria-label="No link available"
-            className="group/arrow flex size-10 items-center justify-center rounded-full bg-surface opacity-50 transition-colors hover:bg-ink hover:opacity-100"
-          >
-            <img
-              src={icons.arrow}
-              alt=""
-              className="size-4 transition-[filter] group-hover/arrow:invert"
-            />
-          </button>
-        )}
       </div>
+      <div className="border-ring pointer-events-none absolute inset-0 rounded-card" />
     </article>
   )
 }

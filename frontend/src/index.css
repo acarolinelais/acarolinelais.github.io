@@ -1,54 +1,54 @@
 @import "tailwindcss";
-
-@font-face {
-  font-family: "Aeonik";
-  src: url("./assets/fonts/Aeonik-Light.ttf") format("truetype");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Aeonik";
-  src: url("./assets/fonts/Aeonik-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Aeonik";
-  src: url("./assets/fonts/Aeonik-Medium.ttf") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Aeonik";
-  src: url("./assets/fonts/Aeonik-Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+@import "@fontsource-variable/dm-sans/wght.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: "Aeonik", "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans: "DM Sans Variable", "Inter", system-ui, -apple-system, sans-serif;
 
   --color-ink: #17151b;
   --color-ink-soft: #4a4750;
   --color-cream: #ffffff;
-  --color-surface: #F5F5F5;
+  --color-surface: #f3f1ee;
   --color-muted: #8d8994;
   --color-border: rgba(23, 21, 27, 0.08);
   --color-ring: #185cf7;
   --color-accent: #185cf7;
   --color-accent-soft: #e7ecff;
 
-  --radius-card: 3rem;
+  --radius-card: 4rem;
   --radius-pill: 999px;
 
   --shadow-card: 0 1px 2px rgba(23, 21, 27, 0.04), 0 12px 32px -12px rgba(23, 21, 27, 0.18);
   --shadow-float: 0 8px 24px -8px rgba(23, 21, 27, 0.25);
+}
+
+/*
+ * Diagonal white rim light, fading from solid to transparent, used as the
+ * 1px "border" on every bento card. Verified in isolation (see
+ * conversation) that Chromium here silently drops `backdrop-filter` on ANY
+ * element that shares a paint region with a `background-clip: padding-box,
+ * border-box` double-layer trick — whether that trick sits on the same
+ * element, an ancestor, or even an overlapping sibling. `mask-composite:
+ * exclude` carves out the same ring shape without ever touching
+ * `background-clip`, so it doesn't trip the bug. Apply to a
+ * `pointer-events-none absolute inset-0` overlay that's a SIBLING of the
+ * actual blurred/filled element (never its parent or the same node) — see
+ * DateCard, IntroCard, SocialGridCard, CircleImageBadge, BentoCard,
+ * WorkProjectCard, Skills, ThemeToggle.
+ */
+@utility border-ring {
+  padding: 1.2px;
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.04)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }
 
 /*
