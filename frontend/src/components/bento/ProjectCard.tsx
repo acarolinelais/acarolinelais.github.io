@@ -21,7 +21,7 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
             {project.tech.map((tech) => (
               <span
                 key={tech}
-                className="flex size-12 items-center justify-center rounded-full bg-surface ring-4 ring-white"
+                className="flex size-12 items-center justify-center rounded-full bg-surface ring-4 ring-cream"
               >
                 <img src={icons[tech]} alt="" className="size-6" />
               </span>
@@ -34,12 +34,12 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
               target="_blank"
               rel="noreferrer"
               aria-label={`Open ${project.title}`}
-              className="group/arrow flex size-10 items-center justify-center rounded-full bg-surface transition-colors hover:bg-ink"
+              className="group/arrow flex size-10 items-center justify-center rounded-full bg-surface transition-colors hover:bg-ink dark:hover:bg-white"
             >
               <img
                 src={icons.arrow}
                 alt=""
-                className="size-4 transition-[filter] group-hover/arrow:invert"
+                className="size-4 transition-[filter] group-hover/arrow:invert dark:invert dark:group-hover/arrow:invert-0"
               />
             </a>
           ) : (
@@ -47,12 +47,12 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
               type="button"
               disabled
               aria-label="No link available"
-              className="group/arrow flex size-12 items-center justify-center rounded-full bg-surface transition-colors hover:bg-ink"
+              className="group/arrow flex size-12 items-center justify-center rounded-full bg-surface transition-colors hover:bg-ink dark:hover:bg-white"
             >
               <img
                 src={icons.arrow}
                 alt=""
-                className="size-4 transition-[filter] group-hover/arrow:invert"
+                className="size-4 transition-[filter] group-hover/arrow:invert dark:invert dark:group-hover/arrow:invert-0"
               />
             </button>
           )}

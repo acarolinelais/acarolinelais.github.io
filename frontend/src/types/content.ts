@@ -13,6 +13,7 @@ export interface Project {
   tech: TechIconName[]
   link: string | null
   status: 'live' | 'in-progress' | 'coming-soon'
+  image?: string
 }
 
 export interface SkillGroup {

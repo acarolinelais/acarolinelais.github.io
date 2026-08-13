@@ -14,7 +14,7 @@ export function CircleImageBadge({ className }: CircleImageBadgeProps) {
         className,
       )}
     >
-      <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-full bg-white/5 backdrop-blur-xl">
+      <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-full bg-white/5 backdrop-blur-xl dark:bg-black/5">
         <img
           src={images.avatar}
           alt="Caroline Lais"

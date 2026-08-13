@@ -1,6 +1,5 @@
 import arrow from './arrow.png'
 import codeMerge from './code-merge.svg'
-import cube from './cube.png'
 import github from './github.svg'
 import homeWhite from './home-white.png'
 import instagram from './instagram.svg'
@@ -19,7 +18,6 @@ import workWhite from './work-white.png'
 export const icons = {
   arrow,
   codeMerge,
-  cube,
   github,
   homeWhite,
   instagram,

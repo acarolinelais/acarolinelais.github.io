@@ -28,12 +28,14 @@ export function BentoCard({
         className={cn(
           'absolute inset-0 flex flex-col overflow-hidden rounded-card',
           surface === 'white' && 'bg-cream',
-          surface === 'glass' && 'bg-white/5 backdrop-blur-xl',
+          surface === 'glass' && 'bg-white/5 backdrop-blur-xl dark:bg-black/5',
         )}
       >
         {children}
       </div>
-      <div className="border-ring pointer-events-none absolute inset-0 rounded-card" />
+      {surface === 'glass' && (
+        <div className="border-ring pointer-events-none absolute inset-0 rounded-card" />
+      )}
     </>
   )
 

@@ -24,7 +24,7 @@ export function DateCard({ className }: DateCardProps) {
         className,
       )}
     >
-      <div className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-card bg-white/5 p-8 backdrop-blur-xl">
+      <div className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-card bg-white/5 p-8 backdrop-blur-xl dark:bg-black/5">
         <div className="flex items-start justify-between">
           <span className="text-x font-regular text-white">{dayMonth}</span>
         </div>

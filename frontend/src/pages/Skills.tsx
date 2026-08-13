@@ -30,24 +30,21 @@ export function Skills() {
                 page-entrance slide, which as an inline style would silently
                 win over a `hover:` class on the same node — so the hover
                 lift lives on this separate, purely-CSS wrapper instead. */}
-            <div className="relative rounded-card shadow-card transition-transform duration-300 ease-out hover:-translate-y-1">
-              <div className="rounded-card bg-cream p-7">
-                <h3 className="text-lg font-medium text-ink">{group.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-                  {group.description}
-                </p>
-                <div className="mt-5 flex flex-wrap gap-3">
-                  {group.icons.map((icon) => (
-                    <span
-                      key={icon}
-                      className="flex size-11 items-center justify-center rounded-full bg-surface"
-                    >
-                      <img src={icons[icon]} alt="" className="size-5" />
-                    </span>
-                  ))}
-                </div>
+            <div className="rounded-card bg-cream p-7 shadow-card transition-transform duration-300 ease-out hover:-translate-y-1">
+              <h3 className="text-lg font-medium text-ink">{group.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                {group.description}
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                {group.icons.map((icon) => (
+                  <span
+                    key={icon}
+                    className="flex size-11 items-center justify-center rounded-full bg-surface"
+                  >
+                    <img src={icons[icon]} alt="" className="size-5" />
+                  </span>
+                ))}
               </div>
-              <div className="border-ring pointer-events-none absolute inset-0 rounded-card" />
             </div>
           </motion.article>
         ))}

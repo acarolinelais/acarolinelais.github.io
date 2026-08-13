@@ -4,25 +4,31 @@ from app.schemas import Project
 PROJECTS: list[Project] = [
     Project(
         slug="maestro",
-        title="Maestro",
-        subtitle="Developer Tool",
+        title="Data Wave",
+        subtitle="Job Search App",
         description=(
-            "A developer tool built with Python and React. "
-            "More details coming soon."
+            "Designed to make job searching faster and more enjoyable with a "
+            "clean interface, smooth navigation, and a modern visual style. "
+            "This concept focuses on helping users discover opportunities, "
+            "explore job listings, and connect with employers through a "
+            "simple and intuitive mobile experience."
         ),
-        tech=["python", "react"],
+        tech=["react", "python"],
         link=None,
         status="in-progress",
     ),
     Project(
         slug="byterise",
-        title="ByteRise",
-        subtitle="Crypto Extend",
+        title="Lendora",
+        subtitle="Mortgage Dashboard",
         description=(
-            "A crypto-focused extension built with Python and React. "
-            "More details coming soon."
+            "Lendora is a modern dashboard UI for mortgage advisors that "
+            "combines rate analytics, client tracking, and performance "
+            "insights. Designed to help users streamline loan workflows, "
+            "manage leads, and collaborate through a built-in community "
+            "space."
         ),
-        tech=["python", "react"],
+        tech=["react", "python"],
         link=None,
         status="in-progress",
     ),
