@@ -52,21 +52,38 @@
 }
 
 /*
- * Scoped dark mode: flips the solid content-card surface (Maestro/ByteRise/
- * Work/Skills cards, dialogs) and their text. The photo background and glass
- * cards are unaffected — they already adapt to whatever image sits behind
- * them, in both themes.
+ * Scoped dark mode: flips the solid content-card surface (ProjectCard,
+ * Skills cards, dialogs) and their text via the `--color-*` variables below.
+ * The glass cards use a separate `dark:bg-black/5` override on each
+ * component instead, since their tint (not just a CSS variable) needs to
+ * flip from a light to a dark wash over the photo background.
  */
 .dark {
   --color-ink: #f5f4f7;
   --color-ink-soft: #c7c3ce;
-  --color-cream: #1c1a21;
-  --color-surface: #26232c;
+  --color-cream: #000000;
+  --color-surface: #424242;
   --color-muted: #9a95a3;
   --color-border: rgba(255, 255, 255, 0.08);
 }
 
 @layer base {
+  /*
+   * Smooths the dark/light toggle: `.dark` swaps the --color-* variables
+   * above instantly, and any element reading them (bg-cream, text-ink,
+   * border-color below, ...) would otherwise snap to the new value the
+   * same frame. Transitioning color-related properties on every element
+   * makes that swap fade instead. Scoped to color/border/fill so it never
+   * touches the transform/opacity properties Framer Motion is animating.
+   */
+  *,
+  ::before,
+  ::after {
+    transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+    transition-duration: 400ms;
+    transition-timing-function: ease-out;
+  }
+
   * {
     border-color: var(--color-border);
   }

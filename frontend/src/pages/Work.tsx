@@ -5,10 +5,6 @@ import { WorkProjectCard } from '@/components/work/WorkProjectCard'
 import { fallbackProjects } from '@/data/fallback'
 import { getProjects } from '@/lib/api'
 
-const layoutTransition = {
-  layout: { type: 'spring' as const, stiffness: 110, damping: 16, mass: 0.9 },
-}
-
 export function Work() {
   const [projects, setProjects] = useState(fallbackProjects)
 
@@ -18,12 +14,10 @@ export function Work() {
 
   return (
     <div className="[grid-area:1/1] space-y-10">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {projects.map((project, i) => (
           <motion.div
             key={project.slug}
-            layoutId={`project-card-${project.slug}`}
-            transition={layoutTransition}
             initial={{ opacity: 0 }}
             animate={{
               opacity: 1,

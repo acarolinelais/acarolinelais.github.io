@@ -19,7 +19,7 @@ export function SocialGridCard({ socials, className }: SocialGridCardProps) {
         className,
       )}
     >
-      <div className="absolute inset-0 overflow-hidden rounded-card bg-white/5 backdrop-blur-xl">
+      <div className="absolute inset-0 overflow-hidden rounded-card bg-white/5 backdrop-blur-xl dark:bg-black/5">
         <div className="grid size-full grid-cols-2 grid-rows-2 gap-4 p-6">
           {socials.map((social) =>
             social.icon === 'mail' ? (

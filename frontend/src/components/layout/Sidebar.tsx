@@ -33,7 +33,7 @@ export function Sidebar() {
                 <span
                   className={cn(
                     'absolute inset-0',
-                    isActive ? 'bg-accent' : 'bg-white/5 backdrop-blur-xl',
+                    isActive ? 'bg-accent' : 'bg-white/5 backdrop-blur-xl dark:bg-black/5',
                   )}
                 />
                 <span className="border-ring pointer-events-none absolute inset-0 rounded-full" />

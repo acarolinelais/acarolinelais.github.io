@@ -29,7 +29,7 @@ export function NowPlayingCard({ className }: NowPlayingCardProps) {
         className,
       )}
     >
-      <div className="absolute inset-0 flex flex-col overflow-hidden rounded-card bg-white/5 p-3 backdrop-blur-xl">
+      <div className="absolute inset-0 flex flex-col overflow-hidden rounded-card bg-white/5 p-3 backdrop-blur-xl dark:bg-black/5">
         <div className="relative flex-1 overflow-hidden rounded-t-[calc(var(--radius-card)-0.75rem)] rounded-b-4xl">
           <AnimatePresence mode="wait">
             <motion.img
@@ -50,7 +50,7 @@ export function NowPlayingCard({ className }: NowPlayingCardProps) {
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0, transition: { duration: 0.3, delay: 0.1 } }}
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
-            className="px-4 pb-3 pt-3"
+            className="px-5 pb-3 pt-3"
           >
             <p className="truncate text-md font-regular text-white">{track.title}</p>
             <p className="truncate text-sm text-white/70">{track.artist}</p>

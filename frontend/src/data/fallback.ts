@@ -1,3 +1,4 @@
+import { images } from '@/assets/images'
 import type { Project, SkillGroup, SocialLink } from '@/types/content'
 
 /**
@@ -8,23 +9,25 @@ import type { Project, SkillGroup, SocialLink } from '@/types/content'
 export const fallbackProjects: Project[] = [
   {
     slug: 'maestro',
-    title: 'Maestro',
-    subtitle: 'Developer Tool',
+    title: 'Data Wave',
+    subtitle: 'Job Search App',
     description:
-      'A developer tool built with Python and React. More details coming soon.',
-    tech: ['python', 'react'],
+      'Designed to make job searching faster and more enjoyable with a clean interface, smooth navigation, and a modern visual style. This concept focuses on helping users discover opportunities, explore job listings, and connect with employers through a simple and intuitive mobile experience.',
+    tech: ['react', 'python'],
     link: null,
     status: 'in-progress',
+    image: images.datawaveProject,
   },
   {
     slug: 'byterise',
-    title: 'ByteRise',
-    subtitle: 'Crypto Extend',
+    title: 'Lendora',
+    subtitle: 'Mortgage Dashboard',
     description:
-      'A crypto-focused extension built with Python and React. More details coming soon.',
-    tech: ['python', 'react'],
+      'Lendora is a modern dashboard UI for mortgage advisors that combines rate analytics, client tracking, and performance insights. Designed to help users streamline loan workflows, manage leads, and collaborate through a built-in community space.',
+    tech: ['react', 'python'],
     link: null,
     status: 'in-progress',
+    image: images.lendoraProject,
   },
   {
     slug: 'coming-soon',
