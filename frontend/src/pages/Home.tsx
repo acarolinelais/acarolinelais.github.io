@@ -9,54 +9,10 @@ import { NowPlayingCard } from '@/components/bento/NowPlayingCard'
 import { ProjectCard } from '@/components/bento/ProjectCard'
 import { SocialGridCard } from '@/components/bento/SocialGridCard'
 import { getProjects, getSocials } from '@/lib/api'
+import { gridVariants, scrollDownVariants } from '@/lib/pageTransitions'
 import { fallbackProjects, fallbackSocials } from '@/data/fallback'
 
 const CARD = 'aspect-square w-full'
-
-// Orchestrates the organic, staggered entrance for every card when Home
-// mounts, whichever page you're arriving from.
-const gridVariants = {
-  initial: {},
-  animate: {
-    transition: { staggerChildren: 0.06, delayChildren: 0.08 },
-  },
-  // Framer Motion only resolves an exit as "complete" — letting
-  // AnimatePresence unmount the tree — once every motion component that
-  // declares `exit` reaches its target. Without this key, the root's own
-  // `exit="exit"` pointed at nothing, so its own exit lingered, keeping the
-  // full outgoing grid mounted (and visually stacked on the incoming page)
-  // well past the point its children had actually finished animating out.
-  exit: {},
-}
-
-// Every card, including the project cards, falls away the same quiet way —
-// a physical, reorder-style push rather than a fade. They stay fully
-// opaque throughout; the movement itself reads as "leaving". Project cards
-// used to instead "fuse" into their Work-page counterpart via a shared
-// layoutId, morphing in place — but WorkProjectCard is now a much bigger,
-// differently-shaped card (cover image, taller layout), so the two ends of
-// that morph no longer match closely enough for Framer Motion to bridge
-// them smoothly: the small Home card and the large Work card would both
-// render fully visible, overlapping, for a beat before settling. Plain
-// fade/slide avoids that mismatch entirely.
-const scrollDownVariants = {
-  initial: { y: -48 },
-  animate: {
-    y: 0,
-    transition: { type: 'spring' as const, stiffness: 180, damping: 20 },
-  },
-  // A large-displacement spring like the old one (stiffness 140, damping
-  // 18, default mass 1) doesn't fire onComplete until it crosses Framer
-  // Motion's rest thresholds, which for a 240px throw took ~800ms+ even
-  // though it looked visually settled well before that — long enough that
-  // the outgoing Home grid stayed stacked on top of the incoming Work page
-  // for the whole stretch. Tightened (higher stiffness, added mass < 1) so
-  // it actually finishes fast without losing the spring character.
-  exit: {
-    y: 240,
-    transition: { type: 'spring' as const, stiffness: 420, damping: 34, mass: 0.6 },
-  },
-}
 
 export function Home() {
   const [projects, setProjects] = useState(fallbackProjects)

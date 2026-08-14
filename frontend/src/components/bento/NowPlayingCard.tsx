@@ -11,7 +11,9 @@ interface NowPlayingCardProps {
 const ROTATE_MS = 3 * 60 * 1000
 
 export function NowPlayingCard({ className }: NowPlayingCardProps) {
-  const [index, setIndex] = useState(0)
+  const [index, setIndex] = useState(() =>
+    Math.floor(Math.random() * nowPlayingTracks.length),
+  )
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -52,8 +54,8 @@ export function NowPlayingCard({ className }: NowPlayingCardProps) {
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
             className="px-5 pb-3 pt-3"
           >
-            <p className="truncate text-md font-regular text-white">{track.title}</p>
-            <p className="truncate text-sm text-white/70">{track.artist}</p>
+            <p className="truncate text-md text-center font-regular text-white">{track.title}</p>
+            <p className="truncate text-sm text-center text-white/60">{track.artist}</p>
           </motion.div>
         </AnimatePresence>
       </div>
