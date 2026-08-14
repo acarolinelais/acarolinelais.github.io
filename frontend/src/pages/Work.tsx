@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { WorkProjectCard } from '@/components/work/WorkProjectCard'
 import { fallbackProjects } from '@/data/fallback'
 import { getProjects } from '@/lib/api'
+import { gridVariants, scrollDownVariants } from '@/lib/pageTransitions'
 
 export function Work() {
   const [projects, setProjects] = useState(fallbackProjects)
@@ -13,22 +14,20 @@ export function Work() {
   }, [])
 
   return (
-    <div className="[grid-area:1/1] space-y-10">
+    <motion.div
+      className="[grid-area:1/1] space-y-10"
+      variants={gridVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {projects.map((project, i) => (
-          <motion.div
-            key={project.slug}
-            initial={{ opacity: 0 }}
-            animate={{
-              opacity: 1,
-              transition: { duration: 0.25, delay: 0.05 + i * 0.05 },
-            }}
-            exit={{ opacity: 0, transition: { duration: 0.15 } }}
-          >
+        {projects.map((project) => (
+          <motion.div key={project.slug} variants={scrollDownVariants}>
             <WorkProjectCard project={project} />
           </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   )
 }

@@ -21,7 +21,7 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
             {project.tech.map((tech) => (
               <span
                 key={tech}
-                className="flex size-12 items-center justify-center rounded-full bg-surface ring-4 ring-cream"
+                className="flex size-12 items-center justify-center rounded-full bg-surface ring-4 ring-cream transition-colors duration-300 hover:bg-ink/10 dark:hover:bg-white/10"
               >
                 <img src={icons[tech]} alt="" className="size-6" />
               </span>

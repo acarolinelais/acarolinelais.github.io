@@ -19,7 +19,11 @@ function App() {
   return (
     <AppShell page={page}>
       <div className="grid">
-        <AnimatePresence mode="sync" initial={false}>
+        {/* "wait" ensures the outgoing page's exit animation fully
+            finishes — and unmounts — before the incoming page mounts, so
+            the two grids (Home's small bento cards, Work's much larger
+            project cards) never render on screen at the same time. */}
+        <AnimatePresence mode="wait" initial={false}>
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<Home />} />
             <Route path="/work" element={<Work />} />

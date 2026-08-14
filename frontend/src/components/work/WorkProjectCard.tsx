@@ -14,16 +14,16 @@ export function WorkProjectCard({ project }: { project: Project }) {
       <div className="flex flex-col rounded-card bg-white/5 p-10 backdrop-blur-xl dark:bg-black/5">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-xl font-medium text-white">{project.title}</h3>
-            <p className="mt-1 text-sm text-white/60">{project.subtitle}</p>
+            <h3 className="text-xl font-regular text-white">{project.title}</h3>
+            <p className="mt-0.5 text-sm text-white/60">{project.subtitle}</p>
           </div>
           {!project.image && (
-            <Badge variant="soft" className="bg-white/10 text-white">
+            <Badge variant="soft" className="bg-white/10 text-white dark:bg-black/10">
               {STATUS_LABEL[project.status]}
             </Badge>
           )}
         </div>
-        <p className="mt-4 text-sm leading-relaxed text-white/80">
+        <p className="mt-3 text-sm leading-relaxed text-white/80">
           {project.description}
         </p>
 
@@ -36,13 +36,14 @@ export function WorkProjectCard({ project }: { project: Project }) {
         )}
 
         <div className="mt-6 flex items-center justify-between">
-          <div className="flex items-center -space-x-2">
+          <div className="flex items-center gap-2">
             {project.tech.map((tech) => (
               <span
                 key={tech}
-                className="flex size-9 items-center justify-center rounded-full bg-surface ring-4 ring-cream"
+                className="group/tech relative flex size-10 items-center justify-center rounded-full"
               >
-                <img src={icons[tech]} alt="" className="size-4" />
+                <span className="absolute inset-0 rounded-full bg-white/15 backdrop-blur-xl transition-colors duration-300 group-hover/tech:bg-white/20 dark:bg-black/10 dark:group-hover/tech:bg-black/20" />
+                <img src={icons[tech]} alt="" className="relative size-5" />
               </span>
             ))}
           </div>
@@ -53,26 +54,21 @@ export function WorkProjectCard({ project }: { project: Project }) {
               target="_blank"
               rel="noreferrer"
               aria-label={`Open ${project.title}`}
-              className="group/arrow flex size-10 items-center justify-center rounded-full bg-surface transition-colors hover:bg-ink dark:hover:bg-white"
+              className="group/arrow relative flex size-10 items-center justify-center rounded-full"
             >
-              <img
-                src={icons.arrow}
-                alt=""
-                className="size-4 transition-[filter] group-hover/arrow:invert dark:invert dark:group-hover/arrow:invert-0"
-              />
+              <span className="absolute inset-0 rounded-full bg-white/5 backdrop-blur-xl transition-colors duration-300 group-hover/arrow:bg-white/15 dark:bg-black/10 dark:group-hover/arrow:bg-black/20" />
+              <span className="border-ring pointer-events-none absolute inset-0 rounded-full" />
+              <img src={icons.arrow} alt="" className="relative size-4 invert" />
             </a>
           ) : (
             <button
               type="button"
               disabled
               aria-label="No link available"
-              className="group/arrow flex size-10 items-center justify-center rounded-full bg-surface opacity-50 transition-colors hover:bg-ink hover:opacity-100 dark:hover:bg-white"
+              className="group/arrow relative flex size-10 items-center justify-center rounded-full"
             >
-              <img
-                src={icons.arrow}
-                alt=""
-                className="size-4 transition-[filter] group-hover/arrow:invert dark:invert dark:group-hover/arrow:invert-0"
-              />
+              <span className="absolute inset-0 rounded-full bg-white/15 backdrop-blur-xl transition-colors duration-300 group-hover/arrow:bg-white/50 dark:bg-black/10 dark:group-hover/arrow:bg-black/30" />
+              <img src={icons.arrow} alt="" className="relative size-3.5 invert" />
             </button>
           )}
         </div>

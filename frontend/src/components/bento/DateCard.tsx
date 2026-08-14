@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 import { cn } from '@/lib/utils'
 
 interface DateCardProps {
@@ -5,7 +7,13 @@ interface DateCardProps {
 }
 
 export function DateCard({ className }: DateCardProps) {
-  const now = new Date()
+  const [now, setNow] = useState(() => new Date())
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(id)
+  }, [])
+
   const dayMonth = now.toLocaleDateString('en-US', {
     day: '2-digit',
     month: 'short',

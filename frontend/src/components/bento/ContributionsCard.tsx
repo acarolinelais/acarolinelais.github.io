@@ -24,13 +24,15 @@ export function ContributionsCard({ className }: ContributionsCardProps) {
   return (
     <div
       className={cn(
-        'flex flex-col rounded-card bg-cream p-8 transition-transform duration-300 ease-out hover:-translate-y-1',
+        'flex flex-col rounded-card bg-cream p-8 transition-transform duration-300 ease-out hover:-translate-y-1 lg:p-5 2xl:p-8',
         className,
       )}
     >
-      <div className="flex items-center justify-between">
-        <span className="text-lg font-regular text-ink">Contributions</span>
-        <div className="flex items-center gap-1">
+      <div className="flex items-center justify-between gap-2">
+        <span className="min-w-0 truncate text-lg font-regular text-ink lg:text-base 2xl:text-lg">
+          Contributions
+        </span>
+        <div className="flex shrink-0 items-center gap-1">
           {LEVEL_COLORS.slice(1).map((color) => (
             <span
               key={color}
