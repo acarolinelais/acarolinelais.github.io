@@ -56,14 +56,14 @@ export const fallbackSkillGroups: SkillGroup[] = [
     title: 'Frontend',
     description:
       'Interfaces, design systems and interactions built with React and Tailwind CSS.',
-    icons: ['react', 'tailwind'],
+    icons: ['react', 'typescript', 'javascript', 'css3', 'html5', 'figma', 'tailwind'],
   },
   {
     id: 'backend',
     title: 'Backend & Automation',
     description:
       'APIs, automation scripts and tests written in Python.',
-    icons: ['python', 'codeMerge'],
+    icons: ['python', 'git', 'postgresql', 'docker', 'nodeJs'],
   },
 ]
 

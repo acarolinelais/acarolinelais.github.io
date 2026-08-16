@@ -24,7 +24,7 @@ export function ContributionsCard({ className }: ContributionsCardProps) {
   return (
     <div
       className={cn(
-        'flex flex-col rounded-card bg-cream p-8 transition-transform duration-300 ease-out hover:-translate-y-1 lg:p-5 2xl:p-8',
+        'flex flex-col overflow-hidden rounded-card bg-cream p-8 transition-transform duration-300 ease-out hover:-translate-y-1 lg:p-5 2xl:p-8',
         className,
       )}
     >

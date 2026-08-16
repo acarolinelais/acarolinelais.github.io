@@ -34,7 +34,7 @@
  * `background-clip`, so it doesn't trip the bug. Apply to a
  * `pointer-events-none absolute inset-0` overlay that's a SIBLING of the
  * actual blurred/filled element (never its parent or the same node) — see
- * DateCard, IntroCard, SocialGridCard, CircleImageBadge, BentoCard,
+ * DateCard, IntroCard, SocialGridCard, CircleImageBadge, MapCard, BentoCard,
  * WorkProjectCard, Skills, ThemeToggle.
  */
 @utility border-ring {
