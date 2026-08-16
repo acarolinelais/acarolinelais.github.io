@@ -40,4 +40,14 @@ export const nowPlayingTracks: Track[] = [
     artist: 'Drake',
     cover: images.passionfruit,
   },
+  {
+    title: 'I Wonder',
+    artist: 'Kanye West',
+    cover: images.iWonder,
+  },
+  {
+    title: 'Whisper My Name',
+    artist: 'Drake',
+    cover: images.whisperMyName,
+  },
 ]

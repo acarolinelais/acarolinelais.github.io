@@ -1,18 +1,19 @@
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { CircleImageBadge } from '@/components/bento/CircleImageBadge'
 import { ContributionsCard } from '@/components/bento/ContributionsCard'
 import { DateCard } from '@/components/bento/DateCard'
 import { IntroCard } from '@/components/bento/IntroCard'
+import { MapCard } from '@/components/bento/MapCard'
 import { NowPlayingCard } from '@/components/bento/NowPlayingCard'
 import { ProjectCard } from '@/components/bento/ProjectCard'
+import type { CardSlot } from '@/components/bento/ReorderableGrid'
+import { ReorderableGrid } from '@/components/bento/ReorderableGrid'
 import { SocialGridCard } from '@/components/bento/SocialGridCard'
 import { getProjects, getSocials } from '@/lib/api'
-import { gridVariants, scrollDownVariants } from '@/lib/pageTransitions'
+import { gridVariants } from '@/lib/pageTransitions'
 import { fallbackProjects, fallbackSocials } from '@/data/fallback'
-
-const CARD = 'aspect-square w-full'
 
 export function Home() {
   const [projects, setProjects] = useState(fallbackProjects)
@@ -25,81 +26,114 @@ export function Home() {
 
   const [maestro, byterise, thirdProject] = projects
 
+  // Four masonry columns (see ReorderableGrid), each its own independent
+  // stack — this is what gives the page its organic, not-quite-aligned
+  // feel: a column's height is just whatever its own cards add up to, with
+  // no shared row grid forcing alignment across columns. Two cards break
+  // out of that per-column independence and span two columns wide (desktop
+  // only — see CardSlot.colSpan): the MapCard under DateCard/NowPlaying,
+  // and the ByteRise project card under Intro/CircleBadge.
+  //   Col 1: a vertically-stretched (taller-than-wide) project card, then
+  //          DateCard, then the Manaus MapCard (spans into col 2).
+  //   Col 2: Contributions, then NowPlaying, then the MapCard's other half.
+  //   Col 3: IntroCard, then the ByteRise project card (spans into col 4),
+  //          then a standard-size project card.
+  //   Col 4: the circle avatar, then the ByteRise card's other half, then
+  //          the social grid.
+  const columns = useMemo(() => {
+    const col1: CardSlot[] = []
+    const col2: CardSlot[] = []
+    const col3: CardSlot[] = []
+    const col4: CardSlot[] = []
+
+    if (maestro) {
+      col1.push({
+        id: 'project-maestro',
+        aspectRatio: 0.72,
+        render: () => <ProjectCard project={maestro} className="size-full" />,
+      })
+    }
+    col1.push({
+      id: 'date',
+      aspectRatio: 1,
+      render: () => <DateCard className="size-full" />,
+    })
+
+    col2.push({
+      id: 'contributions',
+      aspectRatio: 1,
+      render: () => <ContributionsCard className="size-full" />,
+    })
+    col2.push({
+      id: 'now-playing',
+      aspectRatio: 0.75,
+      render: () => <NowPlayingCard className="size-full" />,
+    })
+
+    // Same CardSlot object listed in both col1 and col2 — that's what tells
+    // the grid these two columns share this row (see CardSlot.colSpan).
+    const mapSlot: CardSlot = {
+      id: 'map',
+      aspectRatio: 1.7,
+      colSpan: 2,
+      render: () => <MapCard className="size-full" />,
+    }
+    col1.push(mapSlot)
+    col2.push(mapSlot)
+
+    col3.push({
+      id: 'intro',
+      aspectRatio: 1,
+      render: () => <IntroCard className="size-full" />,
+    })
+    col4.push({
+      id: 'circle-badge',
+      aspectRatio: 1,
+      render: () => <CircleImageBadge className="size-full" />,
+    })
+
+    if (byterise) {
+      // Same pattern as mapSlot — shared between col3 and col4.
+      const byteriseSlot: CardSlot = {
+        id: 'project-byterise',
+        // Height is always derived from a single column's width (see
+        // CardSlot.colSpan) — 1 keeps it comfortably tall enough for its
+        // content even when it falls back to a non-spanning single column
+        // below the 4-column breakpoint, while still reading as a wide
+        // banner once it spans two columns on desktop.
+        aspectRatio: 1,
+        colSpan: 2,
+        render: () => <ProjectCard project={byterise} className="size-full" />,
+      }
+      col3.push(byteriseSlot)
+      col4.push(byteriseSlot)
+    }
+
+    if (thirdProject) {
+      col3.push({
+        id: 'project-third',
+        aspectRatio: 1,
+        render: () => <ProjectCard project={thirdProject} className="size-full" />,
+      })
+    }
+    col4.push({
+      id: 'social-grid',
+      aspectRatio: 1,
+      render: () => <SocialGridCard socials={socials} className="size-full" />,
+    })
+
+    return [col1, col2, col3, col4]
+  }, [maestro, byterise, thirdProject, socials])
+
   return (
     <motion.div
-      className="[grid-area:1/1] grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4 lg:gap-12"
+      className="[grid-area:1/1]"
       variants={gridVariants}
       initial="initial"
       animate="animate"
       exit="exit"
     >
-      {/* Column 1 */}
-      <div className="flex flex-col items-start gap-6">
-        {maestro && (
-          <motion.div variants={scrollDownVariants} className={CARD}>
-            <ProjectCard project={maestro} className="size-full" />
-          </motion.div>
-        )}
-        <motion.div
-          variants={scrollDownVariants}
-          className={cardClass('mt-6 lg:mt-20')}
-        >
-          <DateCard className="size-full" />
-        </motion.div>
-      </div>
-
-      {/* Column 2 */}
-      <div className="flex flex-col items-start gap-6 lg:mt-14">
-        <motion.div variants={scrollDownVariants} className={CARD}>
-          <IntroCard className="size-full" />
-        </motion.div>
-        {byterise && (
-          <motion.div
-            variants={scrollDownVariants}
-            className={cardClass('mt-6 lg:mt-8')}
-          >
-            <ProjectCard project={byterise} className="size-full" />
-          </motion.div>
-        )}
-      </div>
-
-      {/* Column 3 */}
-      <div className="flex flex-col items-start gap-4 lg:-mt-10">
-        <motion.div variants={scrollDownVariants} className={CARD}>
-          <ContributionsCard className="size-full" />
-        </motion.div>
-        <motion.div
-          variants={scrollDownVariants}
-          className="aspect-[3/4] w-full mt-4 lg:mt-3"
-        >
-          <NowPlayingCard className="size-full" />
-        </motion.div>
-        {thirdProject && (
-          <motion.div
-            variants={scrollDownVariants}
-            className={cardClass('mt-4 lg:mt-3')}
-          >
-            <ProjectCard project={thirdProject} className="size-full" />
-          </motion.div>
-        )}
-      </div>
-
-      {/* Column 4 */}
-      <div className="flex flex-col items-start gap-6 lg:mt-6">
-        <motion.div variants={scrollDownVariants} className={CARD}>
-          <CircleImageBadge className="size-full" />
-        </motion.div>
-        <motion.div
-          variants={scrollDownVariants}
-          className={cardClass('mt-6 lg:mt-8')}
-        >
-          <SocialGridCard socials={socials} className="size-full" />
-        </motion.div>
-      </div>
+      <ReorderableGrid columns={columns} />
     </motion.div>
   )
-}
-
-function cardClass(extra: string) {
-  return `${CARD} ${extra}`
 }

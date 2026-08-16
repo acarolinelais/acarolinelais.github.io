@@ -1,54 +1,73 @@
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-import { icons } from '@/assets/icons'
-import { fallbackSkillGroups } from '@/data/fallback'
-import { getSkillGroups } from '@/lib/api'
+import { CircleImageBadge } from '@/components/bento/CircleImageBadge'
+import { ContributionsCard } from '@/components/bento/ContributionsCard'
+import { IntroCard } from '@/components/bento/IntroCard'
+import type { CardSlot } from '@/components/bento/ReorderableGrid'
+import { ReorderableGrid } from '@/components/bento/ReorderableGrid'
+import { SkillCard } from '@/components/bento/SkillCard'
+import { SocialGridCard } from '@/components/bento/SocialGridCard'
+import { fallbackSkillGroups, fallbackSocials } from '@/data/fallback'
+import { getSkillGroups, getSocials } from '@/lib/api'
+import { gridVariants } from '@/lib/pageTransitions'
 
 export function Skills() {
   const [groups, setGroups] = useState(fallbackSkillGroups)
+  const [socials, setSocials] = useState(fallbackSocials)
 
   useEffect(() => {
     getSkillGroups().then(setGroups)
+    getSocials().then(setSocials)
   }, [])
 
+  const [frontend, backend] = groups
+
+  // Same masonry columns as Home (see ReorderableGrid).
+  const columns = useMemo(() => {
+    const col1: CardSlot[] = [
+      { id: 'intro', aspectRatio: 0.85, render: () => <IntroCard className="size-full" /> },
+    ]
+    const col2: CardSlot[] = [
+      { id: 'contributions', aspectRatio: 1, render: () => <ContributionsCard className="size-full" /> },
+    ]
+    const col3: CardSlot[] = []
+    const col4: CardSlot[] = [
+      { id: 'circle-badge', aspectRatio: 1, render: () => <CircleImageBadge className="size-full" /> },
+      {
+        id: 'social-grid',
+        aspectRatio: 1,
+        render: () => <SocialGridCard socials={socials} className="size-full" />,
+      },
+    ]
+
+    if (backend) {
+      col3.push({
+        id: 'skill-backend',
+        aspectRatio: 0.85,
+        render: () => <SkillCard group={backend} className="size-full" />,
+      })
+    }
+    if (frontend) {
+      col3.push({
+        id: 'skill-frontend',
+        aspectRatio: 0.85,
+        render: () => <SkillCard group={frontend} className="size-full" />,
+      })
+    }
+
+    return [col1, col2, col3, col4]
+  }, [backend, frontend, socials])
+
   return (
-    <div className="[grid-area:1/1] space-y-10">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        {groups.map((group, i) => (
-          <motion.article
-            key={group.id}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              transition: { duration: 0.3, delay: i * 0.05 },
-            }}
-            exit={{ opacity: 0, y: -8, transition: { duration: 0.2 } }}
-          >
-            {/* Framer Motion drives this element's own transform for the
-                page-entrance slide, which as an inline style would silently
-                win over a `hover:` class on the same node — so the hover
-                lift lives on this separate, purely-CSS wrapper instead. */}
-            <div className="rounded-card bg-cream p-7 shadow-card transition-transform duration-300 ease-out hover:-translate-y-1">
-              <h3 className="text-lg font-medium text-ink">{group.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-                {group.description}
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                {group.icons.map((icon) => (
-                  <span
-                    key={icon}
-                    className="flex size-11 items-center justify-center rounded-full bg-surface"
-                  >
-                    <img src={icons[icon]} alt="" className="size-5" />
-                  </span>
-                ))}
-              </div>
-            </div>
-          </motion.article>
-        ))}
-      </div>
-    </div>
+    <motion.div
+      className="[grid-area:1/1]"
+      variants={gridVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
+      <ReorderableGrid columns={columns} />
+    </motion.div>
   )
 }
