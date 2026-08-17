@@ -8,12 +8,32 @@ import { useEffect, useState } from 'react'
 // what lets Home/Skills lay cards out as independent-height masonry
 // columns (see useMasonryLayout) while still supporting one card being
 // dragged into a completely different column.
-export function useReorderableColumns(initialColumns: string[][]) {
+/**
+ * `resetKey` distinguishes the two reasons `initialColumns` can change.
+ * When it's unchanged, the incoming columns are the same arrangement with
+ * cards possibly added or removed, so a dragged order is worth preserving.
+ * When it changes, the caller has switched to a *different* arrangement
+ * (a breakpoint crossing) — merging a 4-column dragged order into a
+ * 3-column design would strand cards in a column that no longer exists, so
+ * the new arrangement replaces the old one wholesale.
+ */
+export function useReorderableColumns(initialColumns: string[][], resetKey?: unknown) {
   const [columnOrder, setColumnOrder] = useState(initialColumns)
+  const [lastResetKey, setLastResetKey] = useState(resetKey)
 
   // Stable, content-based dependency — initialColumns is a fresh array
   // reference from the page's useMemo on every render.
   const columnsKey = initialColumns.map((col) => col.join(',')).join('|')
+
+  // Adjusted during render rather than in an effect (React's documented
+  // pattern for resetting state when an input changes): the arrangement and
+  // the column count change in the same commit, so an effect would let one
+  // frame paint the *previous* breakpoint's column order against the new
+  // breakpoint's card set — a visible flash of a half-empty grid.
+  if (lastResetKey !== resetKey) {
+    setLastResetKey(resetKey)
+    setColumnOrder(initialColumns)
+  }
 
   // Keeps a dragged arrangement intact across re-renders while still
   // picking up cards that appear/disappear later (e.g. project data
@@ -37,7 +57,8 @@ export function useReorderableColumns(initialColumns: string[][]) {
       return isSame ? current : next
     })
     // initialColumns itself is intentionally omitted — columnsKey is the
-    // stable, content-based version of the same dependency.
+    // stable, content-based version of the same dependency. resetKey isn't
+    // a dependency either: it's fully handled during render above.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columnsKey])
 

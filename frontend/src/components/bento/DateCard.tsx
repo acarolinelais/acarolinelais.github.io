@@ -28,19 +28,25 @@ export function DateCard({ className }: DateCardProps) {
   return (
     <div
       className={cn(
-        'relative transition-transform duration-300 ease-out hover:-translate-y-1',
+        '@container relative transition-transform duration-300 ease-out hover:-translate-y-1',
         className,
       )}
     >
-      <div className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-card bg-white/5 p-8 backdrop-blur-xl dark:bg-black/5">
+      <div className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-card bg-white/5 p-4 backdrop-blur-xl @[10rem]:p-5 @[13rem]:p-6 @[16rem]:p-8 dark:bg-black/5">
         <div className="flex items-start justify-between">
-          <span className="text-x font-regular text-white">{dayMonth}</span>
+          <span className="text-[11px] font-regular text-white @[13rem]:text-sm @[16rem]:text-base">
+            {dayMonth}
+          </span>
         </div>
-        <div>
-          <span className="block text-3xl font-regular text-white">
+        <div className="min-w-0">
+          {/* The longest weekday ("Wednesday") is ~9 characters, which at the
+              desktop 3xl would run past the edge of a phone-width card. */}
+          <span className="block truncate text-base font-regular text-white @[10rem]:text-lg @[13rem]:text-2xl @[16rem]:text-3xl">
             {weekday}
           </span>
-          <span className="text-4xl font-regular text-white">{time}</span>
+          <span className="text-xl font-regular text-white @[10rem]:text-2xl @[13rem]:text-3xl @[16rem]:text-4xl">
+            {time}
+          </span>
         </div>
       </div>
       <div className="border-ring pointer-events-none absolute inset-0 rounded-card" />

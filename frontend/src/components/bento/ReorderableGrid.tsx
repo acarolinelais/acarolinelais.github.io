@@ -15,6 +15,19 @@ import {
 import { scrollDownVariants } from '@/lib/pageTransitions'
 import { useReorderableColumns } from '@/lib/useReorderableGrid'
 
+/**
+ * A per-breakpoint value: either a constant, or a function of how many
+ * columns the grid is currently rendering (2, 3 or 4 — see
+ * `getColumnCount`). The function form exists because a card's *proportions*
+ * often need to change with the breakpoint, not just its size — a wide map
+ * strip that reads well at 4 columns is an unusable sliver at 2.
+ */
+type Responsive<T> = T | ((columnCount: number) => T)
+
+function resolve<T>(value: Responsive<T>, columnCount: number): T {
+  return typeof value === 'function' ? (value as (c: number) => T)(columnCount) : value
+}
+
 export interface CardSlot {
   id: string
   /**
@@ -22,19 +35,23 @@ export interface CardSlot {
    * square, 0.75 for taller-than-wide. Independent of `colSpan`: a spanning
    * card gets *wider* (not taller) than a same-ratio single-column card.
    */
-  aspectRatio: number
+  aspectRatio: Responsive<number>
   /**
    * How many of its home column plus the columns to its right this card
-   * claims (default 1). Only takes effect at the 4-column breakpoint, where
-   * each logical column maps 1:1 onto a physical one — at 2/3 columns,
-   * logical columns get folded together (see `computeLayout`), so a spanning
-   * id's position is no longer reliably adjacent to its partner and it falls
-   * back to a normal single-column card. To span, list the *same* CardSlot
-   * (reuse the object, don't just repeat the id) in both of its home
-   * columns' arrays, at the point in each where the shared row should land —
-   * see the `map`/`project-byterise` slots in Home.tsx.
+   * claims (default 1). To span, list the *same* CardSlot (reuse the object,
+   * don't just repeat the id) in both of its home columns' arrays, at the
+   * point in each where the shared row should land — see the
+   * `map`/`project-byterise` slots in Home.tsx.
+   *
+   * Spanning is only reliable when the card's two home columns still land in
+   * *adjacent* buckets after the fold-down in `computeLayout` — which depends
+   * on both the column count and which logical columns the card lives in. Use
+   * the function form to opt out at the breakpoints where that isn't true (or
+   * where a full-width card just isn't wanted); a span that can't be honoured
+   * degrades to a single-column card rather than breaking the layout, but
+   * saying so explicitly keeps the result predictable.
    */
-  colSpan?: number
+  colSpan?: Responsive<number>
   render: () => ReactNode
 }
 
@@ -87,8 +104,12 @@ function computeLayout(
   containerWidth: number,
   columnOrder: string[][],
   slotsById: Map<string, CardSlot>,
-): { positions: Map<string, Rect>; height: number } {
+): { positions: Map<string, Rect>; height: number; columnCount: number } {
   const columnCount = getColumnCount(containerWidth)
+  // Before the first measurement there's nothing meaningful to lay out, and
+  // a zero width would otherwise produce negative column widths.
+  if (containerWidth <= 0) return { positions: new Map(), height: 0, columnCount }
+
   const gap = getGap(containerWidth)
   const columnWidth = (containerWidth - gap * (columnCount - 1)) / columnCount
 
@@ -111,9 +132,19 @@ function computeLayout(
   // non-spanning cards have already been placed. Each pass places whatever
   // is currently placeable and loops until nothing moves.
   const pointers = new Array(columnCount).fill(0)
-  let progressed = true
-  while (progressed) {
-    progressed = false
+  const anyRemaining = () => pointers.some((p, c) => p < buckets[c].length)
+
+  // Stall-breaker. A spanning card can only be placed once every column it
+  // reaches into has caught up to it, so a card whose home columns *don't*
+  // end up adjacent after the fold above can never become ready — and it
+  // would block its whole bucket behind it, leaving those cards with no
+  // position and therefore rendering nothing at all. If a full pass places
+  // nothing while cards are still queued, the next pass demotes spans to 1
+  // so the stuck heads go down as ordinary cards. Reset as soon as anything
+  // moves, so cards later in the queue can still span.
+  let relaxSpans = false
+  while (anyRemaining()) {
+    let progressed = false
     for (let c = 0; c < columnCount; c++) {
       const bucket = buckets[c]
       if (pointers[c] >= bucket.length) continue
@@ -134,7 +165,9 @@ function computeLayout(
         continue
       }
 
-      const span = columnCount < 4 ? 1 : Math.min(slot.colSpan ?? 1, columnCount - c)
+      const span = relaxSpans
+        ? 1
+        : Math.min(resolve(slot.colSpan ?? 1, columnCount), columnCount - c)
       const spanCols = Array.from({ length: span }, (_, k) => c + k)
       const ready = spanCols.every((sc) => buckets[sc][pointers[sc]] === id)
       if (!ready) continue
@@ -142,7 +175,7 @@ function computeLayout(
       // Height is always derived from a single column's width — spanning
       // makes a card wider, never taller — while width grows with the span.
       const width = columnWidth * span + gap * (span - 1)
-      const height = columnWidth / slot.aspectRatio
+      const height = columnWidth / resolve(slot.aspectRatio, columnCount)
       const top = Math.max(...spanCols.map((sc) => cumulativeY[sc]))
       positions.set(id, { left: c * (columnWidth + gap), top, width, height })
       spanCols.forEach((sc) => {
@@ -151,43 +184,81 @@ function computeLayout(
       })
       progressed = true
     }
+
+    if (progressed) {
+      relaxSpans = false
+      continue
+    }
+    // Nothing moved. One retry with spans demoted; if that also places
+    // nothing the queue is genuinely unplaceable, so stop rather than spin.
+    if (relaxSpans) break
+    relaxSpans = true
   }
 
   const height = columnWidth > 0 ? Math.max(0, ...cumulativeY.map((y) => y - gap)) : 0
-  return { positions, height }
+  return { positions, height, columnCount }
 }
 
 interface ReorderableGridProps {
-  columns: CardSlot[][]
+  /**
+   * Either one fixed set of logical columns — which gets folded down into
+   * however many physically fit (see `computeLayout`) — or a function
+   * returning the arrangement to use at a given column count.
+   *
+   * The function form exists because folding is a reasonable default but not
+   * a design: it can only ever merge whole columns end-to-end, so it can't
+   * express "on a 3-column screen this card moves next to that one". A page
+   * that has an actual design per breakpoint should return exactly
+   * `columnCount` columns and get them used verbatim.
+   */
+  columns: CardSlot[][] | ((columnCount: number) => CardSlot[][])
 }
 
 export function ReorderableGrid({ columns }: ReorderableGridProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const nodesRef = useRef(new Map<string, HTMLDivElement>())
 
-  const slotsById = useMemo(() => new Map(columns.flat().map((slot) => [slot.id, slot])), [columns])
-  const initialColumnOrder = useMemo(() => columns.map((col) => col.map((slot) => slot.id)), [columns])
-  const { columnOrder, moveItem } = useReorderableColumns(initialColumnOrder)
-
-  const [layout, setLayout] = useState<{ positions: Map<string, Rect>; height: number }>({
-    positions: new Map(),
-    height: 0,
-  })
+  // Measured width drives everything downstream, including *which*
+  // arrangement is in play — so it has to be state, resolved before the
+  // columns are.
+  const [containerWidth, setContainerWidth] = useState(0)
+  const columnCount = getColumnCount(containerWidth)
 
   useLayoutEffect(() => {
     const el = containerRef.current
     if (!el) return
 
-    function recompute() {
-      if (!el) return
-      setLayout(computeLayout(el.offsetWidth, columnOrder, slotsById))
+    function measure() {
+      if (el) setContainerWidth(el.offsetWidth)
     }
 
-    recompute()
-    const observer = new ResizeObserver(recompute)
+    measure()
+    const observer = new ResizeObserver(measure)
     observer.observe(el)
     return () => observer.disconnect()
-  }, [columnOrder, slotsById])
+  }, [])
+
+  const resolvedColumns = useMemo(
+    () => (typeof columns === 'function' ? columns(columnCount) : columns),
+    [columns, columnCount],
+  )
+
+  const slotsById = useMemo(
+    () => new Map(resolvedColumns.flat().map((slot) => [slot.id, slot])),
+    [resolvedColumns],
+  )
+  const initialColumnOrder = useMemo(
+    () => resolvedColumns.map((col) => col.map((slot) => slot.id)),
+    [resolvedColumns],
+  )
+  // Crossing a breakpoint swaps in a different arrangement, which has to
+  // replace any dragged order outright rather than be merged into it.
+  const { columnOrder, moveItem } = useReorderableColumns(initialColumnOrder, columnCount)
+
+  const layout = useMemo(
+    () => computeLayout(containerWidth, columnOrder, slotsById),
+    [containerWidth, columnOrder, slotsById],
+  )
 
   const totalCount = slotsById.size
 
@@ -224,7 +295,7 @@ export function ReorderableGrid({ columns }: ReorderableGridProps) {
               key={id}
               id={id}
               rect={rect}
-              draggable={(slot.colSpan ?? 1) <= 1}
+              draggable={resolve(slot.colSpan ?? 1, layout.columnCount) <= 1}
             >
               {slot.render()}
             </ReorderableGridItem>
@@ -333,7 +404,20 @@ function ReorderableGridItem({ id, rect, draggable, children }: ReorderableGridI
     <motion.div
       variants={scrollDownVariants}
       className="absolute"
-      style={{ left: rect.left, top: rect.top, width: rect.width, height: rect.height }}
+      style={{
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
+        // Corner radius as a proportion of the card rather than of the
+        // viewport, so a card looks equally rounded at every breakpoint —
+        // a flat 4rem reads as a soft squircle on a 260px desktop card and
+        // as a lozenge on a 130px phone one. Capped by height as well as
+        // width so short wide cards (the map) don't round into a pill.
+        // Inherited by everything inside, including the border-ring overlay
+        // and NowPlayingCard's concentric inner corners.
+        ['--radius-card' as string]: `${Math.min(64, rect.width * 0.24, rect.height * 0.3)}px`,
+      }}
     >
       <motion.div
         ref={setNode}

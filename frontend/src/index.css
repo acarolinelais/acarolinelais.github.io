@@ -16,7 +16,15 @@
   --color-accent: #185cf7;
   --color-accent-soft: #e7ecff;
 
-  --radius-card: 4rem;
+  /*
+   * Fallback only, for cards outside the bento grid (Work page, dialogs).
+   * A flat 4rem radius reads as a soft squircle on a 260px desktop card but
+   * turns a phone-sized one into a lozenge, so it scales with the viewport
+   * here. Cards *inside* ReorderableGrid override this per card with a value
+   * derived from their own measured box, which is the accurate version —
+   * card width doesn't track the viewport (see ContributionsCard).
+   */
+  --radius-card: clamp(2rem, 1rem + 4.5vw, 4rem);
   --radius-pill: 999px;
 
   --shadow-card: 0 1px 2px rgba(23, 21, 27, 0.04), 0 12px 32px -12px rgba(23, 21, 27, 0.18);

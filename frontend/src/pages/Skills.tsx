@@ -44,14 +44,17 @@ export function Skills() {
     if (backend) {
       col3.push({
         id: 'skill-backend',
-        aspectRatio: 0.85,
+        // A skill card carries a title, a full sentence of description and a
+        // wrapping icon row, which needs noticeably more height once a
+        // column is only ~130px wide and the icons wrap onto a second line.
+        aspectRatio: (columnCount) => (columnCount >= 4 ? 0.85 : 0.55),
         render: () => <SkillCard group={backend} className="size-full" />,
       })
     }
     if (frontend) {
       col3.push({
         id: 'skill-frontend',
-        aspectRatio: 0.85,
+        aspectRatio: (columnCount) => (columnCount >= 4 ? 0.85 : 0.55),
         render: () => <SkillCard group={frontend} className="size-full" />,
       })
     }
