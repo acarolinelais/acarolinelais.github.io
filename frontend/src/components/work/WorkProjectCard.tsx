@@ -11,11 +11,13 @@ const STATUS_LABEL: Record<Project['status'], string> = {
 export function WorkProjectCard({ project }: { project: Project }) {
   return (
     <article className="relative rounded-card shadow-card transition-transform duration-300 ease-out hover:-translate-y-1">
-      <div className="flex flex-col rounded-card bg-white/5 p-10 backdrop-blur-xl dark:bg-black/5">
+      {/* Work is a single full-width column below lg, so p-10 left very
+          little room for the description on a phone. */}
+      <div className="flex flex-col rounded-card bg-white/5 p-6 backdrop-blur-xl sm:p-8 lg:p-10 dark:bg-black/5">
         <div className="flex items-start justify-between gap-3">
-          <div>
-            <h3 className="text-xl font-regular text-white">{project.title}</h3>
-            <p className="mt-0.5 text-sm text-white/60">{project.subtitle}</p>
+          <div className="min-w-0">
+            <h3 className="text-lg font-regular text-white sm:text-xl">{project.title}</h3>
+            <p className="mt-0.5 text-xs text-white/60 sm:text-sm">{project.subtitle}</p>
           </div>
           {!project.image && (
             <Badge variant="soft" className="bg-white/10 text-white dark:bg-black/10">
