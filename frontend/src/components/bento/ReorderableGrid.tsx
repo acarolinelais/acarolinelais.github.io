@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import { flushSync } from 'react-dom'
 
 import { scrollDownVariants } from '@/lib/pageTransitions'
 import { useReorderableColumns } from '@/lib/useReorderableGrid'
@@ -57,9 +58,15 @@ export interface CardSlot {
 
 type Rect = { left: number; top: number; width: number; height: number }
 
+interface DropTarget {
+  columnIndex: number
+  insertIndex: number
+}
+
 interface GridContextValue {
   nodesRef: React.RefObject<Map<string, HTMLDivElement>>
-  moveItem: (draggedId: string, targetId: string) => void
+  moveItem: (draggedId: string, columnIndex: number, insertIndex: number) => void
+  resolveDropTarget: (draggedId: string, viewportX: number, viewportY: number) => DropTarget | null
   hasEntered: boolean
   draggingId: string | null
   setDraggingId: (id: string | null) => void
@@ -104,11 +111,11 @@ function computeLayout(
   containerWidth: number,
   columnOrder: string[][],
   slotsById: Map<string, CardSlot>,
-): { positions: Map<string, Rect>; height: number; columnCount: number } {
+): { positions: Map<string, Rect>; height: number; columnCount: number; buckets: string[][] } {
   const columnCount = getColumnCount(containerWidth)
   // Before the first measurement there's nothing meaningful to lay out, and
   // a zero width would otherwise produce negative column widths.
-  if (containerWidth <= 0) return { positions: new Map(), height: 0, columnCount }
+  if (containerWidth <= 0) return { positions: new Map(), height: 0, columnCount, buckets: [] }
 
   const gap = getGap(containerWidth)
   const columnWidth = (containerWidth - gap * (columnCount - 1)) / columnCount
@@ -158,6 +165,28 @@ function computeLayout(
         continue
       }
 
+      // A card can only rightfully start its span at the *leftmost* column
+      // currently pointing at it. Without this check, two spanning cards
+      // stacked back-to-back with nothing single-column between them (e.g.
+      // both cards spanning the same column pair, one right after the
+      // other) break: placing the first span advances *both* of its
+      // columns' pointers in the same pass, so by the time this loop
+      // reaches the second (rightmost) of those columns later in that same
+      // pass, its pointer already sits on the next card — and this column
+      // would start that card's span here, one column late, instead of
+      // waiting for the left column's turn (next pass) to start it
+      // correctly. That produced a real bug: the card silently rendered
+      // one column over from where its own span math intended, no longer
+      // spanning at all.
+      let leftmost = c
+      for (let sc = 0; sc < c; sc++) {
+        if (buckets[sc][pointers[sc]] === id) {
+          leftmost = sc
+          break
+        }
+      }
+      if (leftmost !== c) continue
+
       const slot = slotsById.get(id)
       if (!slot) {
         pointers[c]++
@@ -196,7 +225,7 @@ function computeLayout(
   }
 
   const height = columnWidth > 0 ? Math.max(0, ...cumulativeY.map((y) => y - gap)) : 0
-  return { positions, height, columnCount }
+  return { positions, height, columnCount, buckets }
 }
 
 interface ReorderableGridProps {
@@ -251,9 +280,14 @@ export function ReorderableGrid({ columns }: ReorderableGridProps) {
     () => resolvedColumns.map((col) => col.map((slot) => slot.id)),
     [resolvedColumns],
   )
+  const getSpan = useCallback(
+    (id: string) => resolve(slotsById.get(id)?.colSpan ?? 1, columnCount),
+    [slotsById, columnCount],
+  )
+
   // Crossing a breakpoint swaps in a different arrangement, which has to
   // replace any dragged order outright rather than be merged into it.
-  const { columnOrder, moveItem } = useReorderableColumns(initialColumnOrder, columnCount)
+  const { columnOrder, moveItem } = useReorderableColumns(initialColumnOrder, columnCount, getSpan)
 
   const layout = useMemo(
     () => computeLayout(containerWidth, columnOrder, slotsById),
@@ -271,17 +305,67 @@ export function ReorderableGrid({ columns }: ReorderableGridProps) {
   // pageTransitions.ts's existing stagger untouched) — Framer Motion
   // doesn't reliably fire onAnimationComplete for a propagated-only
   // target, only for a component's own explicit animate.
+  //
+  // Mirrors gridVariants' delayChildren (50ms) + staggerChildren (35ms) —
+  // when the ms/step here drifts from that file's seconds/step, the last
+  // card's spring is still mid-flight when this fires, so layout/drag turn
+  // on and immediately fight it. The +250ms is settle time for that last
+  // card's own entrance spring (scrollDownVariants — tightened to match the
+  // exit spring, so 250ms comfortably covers it now).
   const [hasEntered, setHasEntered] = useState(false)
   useEffect(() => {
-    const entranceMs = 80 + totalCount * 60 + 700
+    const entranceMs = 50 + totalCount * 35 + 250
     const id = setTimeout(() => setHasEntered(true), entranceMs)
     return () => clearTimeout(id)
   }, [totalCount])
 
   const [draggingId, setDraggingId] = useState<string | null>(null)
 
+  // Turns "where the dragged card visually is" into a column + position,
+  // rather than requiring it to land on top of another card's DOM node (see
+  // the note on moveItem in useReorderableGrid.ts for why that requirement
+  // was the bug: a column with little content had empty space nothing could
+  // be dropped onto). `columnIndex` here is a *logical* column-order index —
+  // correct as long as the grid's arrangement returns exactly `columnCount`
+  // columns per breakpoint, which every current caller does (see the
+  // `columns` prop doc below); it would need to account for `computeLayout`'s
+  // fold if a caller ever relied on that instead.
+  const resolveDropTarget = useCallback(
+    (draggedId: string, viewportX: number, viewportY: number): DropTarget | null => {
+      const containerEl = containerRef.current
+      if (!containerEl || containerWidth <= 0 || layout.columnCount <= 0) return null
+
+      const containerRect = containerEl.getBoundingClientRect()
+      const x = viewportX - containerRect.left
+      const y = viewportY - containerRect.top
+
+      const gap = getGap(containerWidth)
+      const colWidth = (containerWidth - gap * (layout.columnCount - 1)) / layout.columnCount
+      const columnIndex = Math.min(
+        Math.max(Math.floor(x / (colWidth + gap)), 0),
+        layout.columnCount - 1,
+      )
+
+      const bucket = (layout.buckets[columnIndex] ?? []).filter((otherId) => otherId !== draggedId)
+      let insertIndex = bucket.length
+      for (let i = 0; i < bucket.length; i++) {
+        const otherRect = layout.positions.get(bucket[i])
+        if (!otherRect) continue
+        if (y < otherRect.top + otherRect.height / 2) {
+          insertIndex = i
+          break
+        }
+      }
+
+      return { columnIndex, insertIndex }
+    },
+    [containerWidth, layout],
+  )
+
   return (
-    <GridContext.Provider value={{ nodesRef, moveItem, hasEntered, draggingId, setDraggingId }}>
+    <GridContext.Provider
+      value={{ nodesRef, moveItem, resolveDropTarget, hasEntered, draggingId, setDraggingId }}
+    >
       <div ref={containerRef} className="relative w-full" style={{ height: layout.height }}>
         {/* A spanning card's id is intentionally listed in more than one
             column (see CardSlot.colSpan) so computeLayout can sync those
@@ -291,12 +375,7 @@ export function ReorderableGrid({ columns }: ReorderableGridProps) {
           const rect = layout.positions.get(id)
           if (!slot || !rect) return null
           return (
-            <ReorderableGridItem
-              key={id}
-              id={id}
-              rect={rect}
-              draggable={resolve(slot.colSpan ?? 1, layout.columnCount) <= 1}
-            >
+            <ReorderableGridItem key={id} id={id} rect={rect}>
               {slot.render()}
             </ReorderableGridItem>
           )
@@ -309,12 +388,12 @@ export function ReorderableGrid({ columns }: ReorderableGridProps) {
 interface ReorderableGridItemProps {
   id: string
   rect: Rect
-  draggable: boolean
   children: ReactNode
 }
 
-function ReorderableGridItem({ id, rect, draggable, children }: ReorderableGridItemProps) {
-  const { nodesRef, moveItem, hasEntered, draggingId, setDraggingId } = useGridContext()
+function ReorderableGridItem({ id, rect, children }: ReorderableGridItemProps) {
+  const { nodesRef, moveItem, resolveDropTarget, hasEntered, draggingId, setDraggingId } =
+    useGridContext()
   const lastTargetRef = useRef<string | null>(null)
   const isDragging = draggingId === id
   const x = useMotionValue(0)
@@ -335,45 +414,55 @@ function ReorderableGridItem({ id, rect, draggable, children }: ReorderableGridI
     [id, nodesRef],
   )
 
-  function findHoverTarget(pointX: number, pointY: number) {
-    for (const [otherId, node] of nodesRef.current) {
-      if (otherId === id) continue
-      const r = node.getBoundingClientRect()
-      if (pointX >= r.left && pointX <= r.right && pointY >= r.top && pointY <= r.bottom) {
-        return otherId
-      }
-    }
-    return null
-  }
-
   function handleDragStart(_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) {
     const node = nodesRef.current.get(id)
     if (node) {
       const r = node.getBoundingClientRect()
       grabOffsetRef.current = { x: info.point.x - r.left, y: info.point.y - r.top }
-      setFixedSize({ width: r.width, height: r.height })
+      // flushSync forces the position:fixed commit to land in the DOM before
+      // x/y (a Framer motion value, written outside React's render cycle)
+      // gets set below. Without it the two updates race: x/y could apply for
+      // one frame while the node was still relatively positioned, translating
+      // it by a full viewport offset and producing a visible jump on pickup.
+      flushSync(() => {
+        setFixedSize({ width: r.width, height: r.height })
+        setDraggingId(id)
+      })
       x.set(r.left)
       y.set(r.top)
+    } else {
+      setDraggingId(id)
     }
-    setDraggingId(id)
   }
 
   function handleDrag(_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) {
-    x.set(info.point.x - grabOffsetRef.current.x)
-    y.set(info.point.y - grabOffsetRef.current.y)
+    const nextX = info.point.x - grabOffsetRef.current.x
+    const nextY = info.point.y - grabOffsetRef.current.y
+    x.set(nextX)
+    y.set(nextY)
 
-    const targetId = findHoverTarget(info.point.x, info.point.y)
-    if (targetId && targetId !== lastTargetRef.current) {
-      lastTargetRef.current = targetId
-      moveItem(id, targetId)
-    } else if (!targetId) {
-      lastTargetRef.current = null
+    if (!fixedSize) return
+    // Resolved from the dragged card's own center, not the raw pointer —
+    // the grab point can sit anywhere inside the card (or, for a two-column
+    // card, well off to one side of its own center).
+    const target = resolveDropTarget(id, nextX + fixedSize.width / 2, nextY + fixedSize.height / 2)
+    if (!target) return
+    const key = `${target.columnIndex}:${target.insertIndex}`
+    if (key !== lastTargetRef.current) {
+      lastTargetRef.current = key
+      moveItem(id, target.columnIndex, target.insertIndex)
     }
   }
 
   function handleDragEnd() {
-    setDraggingId(null)
-    setFixedSize(null)
+    // Same ordering hazard as handleDragStart, in reverse: layout must be
+    // re-enabled (fixedSize cleared) before x/y snap back to 0, or Framer's
+    // FLIP snapshot for the drop-into-place animation gets taken against the
+    // wrong (still-fixed) box and the card visibly teleports before easing in.
+    flushSync(() => {
+      setDraggingId(null)
+      setFixedSize(null)
+    })
     lastTargetRef.current = null
     x.set(0)
     y.set(0)
@@ -426,9 +515,18 @@ function ReorderableGridItem({ id, rect, draggable, children }: ReorderableGridI
         // `layout="position"` so *they* reflow smoothly into their newly
         // computed masonry position.
         layout={hasEntered && !isDragging ? 'position' : false}
-        drag={hasEntered && draggable}
+        drag={hasEntered}
         dragMomentum={false}
         whileDrag={{ scale: 1.03 }}
+        // Explicit rather than Framer's defaults: a slightly underdamped
+        // spring for the reflow (settles without a visible bounce-back, which
+        // read as a glitch when a card overshot then snapped past its target)
+        // and a quick, non-springy tween for the pickup scale, so grabbing a
+        // card feels immediate instead of wobbling up to 1.03x.
+        transition={{
+          layout: { type: 'spring', stiffness: 500, damping: 40 },
+          scale: { duration: 0.15, ease: 'easeOut' },
+        }}
         onDragStart={handleDragStart}
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}

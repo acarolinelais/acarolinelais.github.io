@@ -17,7 +17,11 @@ import { useEffect, useState } from 'react'
  * 3-column design would strand cards in a column that no longer exists, so
  * the new arrangement replaces the old one wholesale.
  */
-export function useReorderableColumns(initialColumns: string[][], resetKey?: unknown) {
+export function useReorderableColumns(
+  initialColumns: string[][],
+  resetKey: unknown,
+  getSpan: (id: string) => number,
+) {
   const [columnOrder, setColumnOrder] = useState(initialColumns)
   const [lastResetKey, setLastResetKey] = useState(resetKey)
 
@@ -62,32 +66,46 @@ export function useReorderableColumns(initialColumns: string[][], resetKey?: unk
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columnsKey])
 
-  function moveItem(draggedId: string, targetId: string) {
-    if (draggedId === targetId) return
-
+  // Geometric rather than target-id-based: the caller (ReorderableGrid)
+  // resolves *where the dragged card visually is* into a column index plus a
+  // position within it, so a drop always lands somewhere — including an
+  // empty column, or the empty space below a column's last card — instead of
+  // requiring the pointer to land exactly on top of another card's DOM
+  // node. That requirement is what made columns with few or short cards
+  // (e.g. a 2- or 3-column layout with a lot of empty space beneath)
+  // effectively undroppable: hovering the gap below the last card had
+  // nothing to register as a target against, so the move silently never
+  // fired.
+  //
+  // A spanning card's id is listed once per column it reaches into (see
+  // CardSlot.colSpan / computeLayout in ReorderableGrid), so moving one has
+  // to drop *every* occurrence and re-list it across however many columns,
+  // starting at the resolved column, its span still claims — not just splice
+  // a single id in one column the way a plain 1-wide card does.
+  function moveItem(draggedId: string, columnIndex: number, insertIndex: number) {
     setColumnOrder((current) => {
       const next = current.map((col) => col.slice())
 
-      let removed = false
+      let removedAny = false
       for (const col of next) {
-        const i = col.indexOf(draggedId)
-        if (i !== -1) {
+        let i = col.indexOf(draggedId)
+        while (i !== -1) {
           col.splice(i, 1)
-          removed = true
-          break
+          removedAny = true
+          i = col.indexOf(draggedId)
         }
       }
-      if (!removed) return current
+      if (!removedAny) return current
 
-      for (const col of next) {
-        const i = col.indexOf(targetId)
-        if (i !== -1) {
-          col.splice(i, 0, draggedId)
-          return next
-        }
+      const anchor = Math.min(Math.max(columnIndex, 0), next.length - 1)
+      const span = Math.min(Math.max(1, getSpan(draggedId)), next.length - anchor)
+      for (let k = 0; k < span; k++) {
+        const col = next[anchor + k]
+        const idx = Math.min(Math.max(insertIndex, 0), col.length)
+        col.splice(idx, 0, draggedId)
       }
 
-      return current
+      return next
     })
   }
 

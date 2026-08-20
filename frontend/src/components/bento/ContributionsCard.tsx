@@ -52,7 +52,7 @@ export function ContributionsCard({ className }: ContributionsCardProps) {
             {LEVEL_COLORS.slice(1).map((color) => (
               <span
                 key={color}
-                className="size-1.5 rounded-full @[10rem]:size-2 @[13rem]:size-2.5 @[16rem]:size-3.5"
+                className="size-1.5 rounded-full @[10rem]:size-2 @[13rem]:size-2.5 @[16rem]:size-3"
                 style={{ backgroundColor: color }}
               />
             ))}

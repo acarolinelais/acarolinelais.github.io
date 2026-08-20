@@ -40,10 +40,15 @@ export function NowPlayingCard({ className }: NowPlayingCardProps) {
               key={track.title}
               src={track.cover}
               alt={`${track.title} cover art`}
+              draggable={false}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: { duration: 0.4 } }}
               exit={{ opacity: 0, transition: { duration: 0.3 } }}
-              className="absolute inset-0 size-full object-cover"
+              // The card itself is drag-reorderable — without these, a
+              // press-and-hold on the cover art starts the browser's own
+              // native image drag (or, on touch, the save-image callout)
+              // instead of the grid's drag gesture.
+              className="absolute inset-0 size-full touch-none object-cover select-none [-webkit-touch-callout:none] [-webkit-user-drag:none]"
             />
           </AnimatePresence>
         </div>

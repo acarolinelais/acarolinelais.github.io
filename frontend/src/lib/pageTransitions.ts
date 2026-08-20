@@ -6,11 +6,17 @@
 // be felt as a stall between pages.
 
 // Orchestrates the organic, staggered entrance for every card when a page
-// mounts, whichever page you're arriving from.
+// mounts, whichever page you're arriving from. Kept tight (small delay, small
+// per-card step) because it's fully sequential with the previous page's exit
+// (see AnimatePresence's "wait" mode in App.tsx) — on an 11-12 card page like
+// Home or Skills, the old 0.08s delay + 0.06s/card step alone pushed the last
+// card's animation past 600ms before it had even *started*, on top of the
+// exit and the spring settle after it. That's what read as a delay before
+// cards showed up.
 export const gridVariants = {
   initial: {},
   animate: {
-    transition: { staggerChildren: 0.06, delayChildren: 0.08 },
+    transition: { staggerChildren: 0.035, delayChildren: 0.05 },
   },
   // Framer Motion only resolves an exit as "complete" — letting
   // AnimatePresence unmount the tree — once every motion component that
@@ -26,9 +32,16 @@ export const gridVariants = {
 // opaque throughout; the movement itself reads as "leaving".
 export const scrollDownVariants = {
   initial: { y: -48 },
+  // Same tightened spring as exit below, not the old stiffness 180 / damping
+  // 20 / default mass 1 this used to have — those are essentially the same
+  // numbers the exit spring had *before* the fix noted below, and had the
+  // identical problem: floaty enough that, stacked behind the entrance
+  // stagger above, the later cards in an 11-12 card page were still visibly
+  // settling the better part of a second after the page mounted, reading as
+  // a stuck/janky transition rather than a snappy one.
   animate: {
     y: 0,
-    transition: { type: 'spring' as const, stiffness: 180, damping: 20 },
+    transition: { type: 'spring' as const, stiffness: 420, damping: 38, mass: 0.6 },
   },
   // A large-displacement spring like the old one (stiffness 140, damping
   // 18, default mass 1) doesn't fire onComplete until it crosses Framer

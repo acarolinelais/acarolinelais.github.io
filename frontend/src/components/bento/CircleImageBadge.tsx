@@ -16,11 +16,16 @@ export function CircleImageBadge({ className }: CircleImageBadgeProps) {
     >
       <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-full bg-white/5 backdrop-blur-xl dark:bg-black/5">
         {/* Proportional, not a fixed size-40: this circle is only ~130px
-            across on a phone, so a 160px avatar overflowed it entirely. */}
+            across on a phone, so a 160px avatar overflowed it entirely.
+            draggable=false + the drag/callout resets below: this card is
+            drag-reorderable, and without them a press-and-hold on the
+            avatar starts the browser's own native image drag (or, on
+            touch, the save-image callout) instead of the grid's gesture. */}
         <img
           src={images.avatar}
           alt="Caroline Lais"
-          className="size-[62%] object-scale-down"
+          draggable={false}
+          className="size-[62%] select-none object-scale-down [-webkit-touch-callout:none] [-webkit-user-drag:none]"
         />
       </div>
       <div className="border-ring pointer-events-none absolute inset-0 rounded-full" />
@@ -31,7 +36,8 @@ export function CircleImageBadge({ className }: CircleImageBadgeProps) {
           src={icons.starRing}
           alt=""
           aria-hidden
-          className="size-3.5 @[13rem]:size-4.5 @[16rem]:size-5"
+          draggable={false}
+          className="size-3.5 select-none @[13rem]:size-4.5 @[16rem]:size-5 [-webkit-touch-callout:none] [-webkit-user-drag:none]"
         />
       </span>
     </div>

@@ -15,20 +15,29 @@ export function MapCard({ className }: MapCardProps) {
     <div
       className={cn(
         // The bleed is what the iframe is oversized by; it's a variable so
-        // the crop can shrink on a small card without the two `calc()`s
-        // below drifting apart. Trimming ~90px off a card that's only ~115px
-        // tall on a phone would crop away the map itself, not just the
-        // chrome — and the chrome is smaller at that width anyway.
+        // the two `calc()`s below don't drift apart. Bleed-y needs to clear
+        // OSM's attribution bar ("Report a problem | © OpenStreetMap
+        // contributors"), which is a roughly fixed pixel height regardless
+        // of iframe size and can wrap to two lines (~90px) on a narrow
+        // embed. It used to scale down at small sizes on the assumption
+        // that trimming that much off a ~115px-tall phone card would crop
+        // the map itself away — measured, that's wrong: the iframe just
+        // renders *more* map into the extra height (OSM fits its fixed bbox
+        // to whatever box it's given), so a taller bleed pushes the
+        // attribution further down without shrinking what's visible above
+        // it. A single value that clears the two-line case everywhere is
+        // simpler and doesn't leave "Report a problem" peeking into small
+        // cards the way the scaled-down figure did.
         '@container relative transition-transform duration-300 ease-out hover:-translate-y-1',
-        '[--map-bleed-x:36px] [--map-bleed-y:56px] @[32rem]:[--map-bleed-x:60px] @[32rem]:[--map-bleed-y:100px]',
+        '[--map-bleed-x:36px] [--map-bleed-y:100px] @[32rem]:[--map-bleed-x:60px]',
         className,
       )}
     >
       <div className="absolute inset-0 overflow-hidden rounded-card">
         {/* Oversized and anchored top-left, so the embed's own zoom control
-            (~40x70px, top-right) and attribution banner (bottom, up to ~90px
-            when it wraps) land outside the visible frame — this card is a
-            decorative snapshot, not an interactive map. The invert/hue-rotate
+            (~40x70px, top-right) and attribution banner (bottom — see the
+            bleed-y note above) land outside the visible frame — this card is
+            a decorative snapshot, not an interactive map. The invert/hue-rotate
             combo is the standard trick for turning the light-only OSM tile
             embed into a dark map in dark mode, since the embed itself has no
             dark tile layer option. */}
