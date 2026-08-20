@@ -36,9 +36,25 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
               stack clips at its own edge instead of pushing the button out. */}
           <div className="flex min-w-0 items-center overflow-hidden -space-x-1.5 @[16rem]:-space-x-2">
             {project.tech.map((tech) => (
+              // A real `border`, not `ring` (box-shadow): animating a
+              // box-shadow-based ring together with border-radius on a
+              // composited element (this card already promotes a layer via
+              // the hover -translate-y-1 on BentoCard) is a known Chromium
+              // rasterization bug — the shadow briefly paints to its
+              // rectangular bounds before the rounded clip catches up,
+              // flashing square corners mid-transition. A real border always
+              // clips to border-radius, transition or not.
+              //
+              // Also no local `transition-colors`/`duration-*`: those
+              // utilities have higher specificity than the sitewide `*` rule
+              // in index.css and would replace its transition-property
+              // outright rather than extend it, putting this badge's fade on
+              // a different clock (300ms) than the rest of the page (400ms).
+              // Falling back to the global rule keeps the border, hover
+              // fill, and every other color-mode fade in sync.
               <span
                 key={tech}
-                className="flex size-7 shrink-0 items-center justify-center rounded-full bg-surface ring-2 ring-cream transition-colors duration-300 hover:bg-ink/10 @[10rem]:size-8 @[13rem]:size-10 @[13rem]:ring-[3px] @[16rem]:size-12 @[16rem]:ring-4 dark:hover:bg-white/10"
+                className="flex size-7 shrink-0 items-center justify-center rounded-full border-2 border-cream bg-surface hover:bg-ink/10 @[10rem]:size-8 @[13rem]:size-10 @[13rem]:border-[3px] @[16rem]:size-12 @[16rem]:border-4 dark:hover:bg-white/10"
               >
                 <img src={icons[tech]} alt="" className="size-3.5 @[10rem]:size-4 @[13rem]:size-5 @[16rem]:size-6" />
               </span>
