@@ -96,3 +96,4 @@ export function ContributionsCard({ className }: ContributionsCardProps) {
     </div>
   )
 }
+  

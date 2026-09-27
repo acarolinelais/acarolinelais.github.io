@@ -60,6 +60,18 @@
 }
 
 /*
+ * Page-transition fade for grid cards (see scrollDownVariants in
+ * lib/pageTransitions.ts) and Work's project cards. Every card's root is a positioning wrapper whose
+ * children are its visual layers (the blurred/filled surface, the
+ * border-ring overlay, floating badges), so the fade goes on those layers
+ * rather than on any ancestor — an ancestor with opacity < 1 would cut the
+ * surfaces' backdrop-filter off from the page background mid-fade.
+ */
+.card-fade > * > * {
+  opacity: var(--card-fade, 1);
+}
+
+/*
  * Scoped dark mode: flips the solid content-card surface (ProjectCard,
  * Skills cards, dialogs) and their text via the `--color-*` variables below.
  * The glass cards use a separate `dark:bg-black/5` override on each
