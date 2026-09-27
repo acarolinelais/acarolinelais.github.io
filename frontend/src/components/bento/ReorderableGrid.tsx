@@ -517,15 +517,17 @@ function ReorderableGridItem({ id, rect, children }: ReorderableGridItemProps) {
         layout={hasEntered && !isDragging ? 'position' : false}
         drag={hasEntered}
         dragMomentum={false}
-        whileDrag={{ scale: 1.03 }}
-        // Explicit rather than Framer's defaults: a slightly underdamped
-        // spring for the reflow (settles without a visible bounce-back, which
-        // read as a glitch when a card overshot then snapped past its target)
-        // and a quick, non-springy tween for the pickup scale, so grabbing a
-        // card feels immediate instead of wobbling up to 1.03x.
+        whileDrag={{ scale: 1.02 }}
+        // Explicit rather than Framer's defaults. Reflow (siblings sliding
+        // aside, and the dropped card easing into its slot) uses a softer,
+        // near-critically-damped spring — damping ratio ≈ 0.98, so no
+        // overshoot/bounce-back, but a lower stiffness than the old 500/40
+        // so cards glide into place instead of snapping. The pickup/drop
+        // scale is a short ease-out-quint tween: immediate to respond, no
+        // wobble, and a smaller 1.02x lift that reads as gentler.
         transition={{
-          layout: { type: 'spring', stiffness: 500, damping: 40 },
-          scale: { duration: 0.15, ease: 'easeOut' },
+          layout: { type: 'spring', stiffness: 300, damping: 34, mass: 1 },
+          scale: { duration: 0.25, ease: [0.22, 1, 0.36, 1] },
         }}
         onDragStart={handleDragStart}
         onDrag={handleDrag}
@@ -538,7 +540,7 @@ function ReorderableGridItem({ id, rect, children }: ReorderableGridItemProps) {
             ? { position: 'fixed' as const, left: 0, top: 0, width: fixedSize.width, height: fixedSize.height }
             : {}),
         }}
-        className="relative size-full touch-none"
+        className="card-fade relative size-full touch-none"
       >
         {children}
       </motion.div>

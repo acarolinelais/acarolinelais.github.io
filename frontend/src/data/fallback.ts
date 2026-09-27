@@ -9,14 +9,14 @@ import type { Project, SkillGroup, SocialLink } from '@/types/content'
 export const fallbackProjects: Project[] = [
   {
     slug: 'maestro',
-    title: 'Data Wave',
-    subtitle: 'Job Search App',
+    title: 'Architech',
+    subtitle: 'Tech Blog',
     description:
-      'Designed to make job searching faster and more enjoyable with a clean interface, smooth navigation, and a modern visual style. This concept focuses on helping users discover opportunities, explore job listings, and connect with employers through a simple and intuitive mobile experience.',
-    tech: ['react', 'python'],
+      'Architech is a personal blog where I share posts explaining programming concepts and lessons learned in a simple, practical way. The front-end was built with React, the back-end with Python, and the data is stored in a PostgreSQL database. Besides helping people who are learning, the project is also my space to put what I study into practice.',
+    tech: ['react', 'python', 'postgresql'],
     link: null,
     status: 'in-progress',
-    image: images.datawaveProject,
+    image: images.architechProject,
   },
   {
     slug: 'byterise',

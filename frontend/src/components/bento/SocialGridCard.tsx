@@ -8,8 +8,17 @@ interface SocialGridCardProps {
   className?: string
 }
 
-const tileClass =
-  'flex items-center justify-center rounded-full bg-white/15 transition-colors hover:bg-white/25'
+// select-none + no native drag/callout on the tiles *and* their icons: this
+// card is drag-reorderable, and a press-and-hold that starts on a tile
+// otherwise begins the browser's own link/image drag (or text selection,
+// or the touch save/open callout) instead of the grid's gesture — see the
+// same treatment on CircleImageBadge's avatar.
+const noNativeDrag = 'select-none [-webkit-touch-callout:none] [-webkit-user-drag:none]'
+
+const tileClass = cn(
+  'flex items-center justify-center rounded-full bg-white/15 transition-colors hover:bg-white/25',
+  noNativeDrag,
+)
 
 export function SocialGridCard({ socials, className }: SocialGridCardProps) {
   return (
@@ -29,7 +38,7 @@ export function SocialGridCard({ socials, className }: SocialGridCardProps) {
                   aria-label={social.label}
                   className={tileClass}
                 >
-                  <img src={icons.mail} alt="" className="size-5 invert @[10rem]:size-6 @[16rem]:size-8" />
+                  <img src={icons.mail} alt="" draggable={false} className={cn('size-5 invert @[10rem]:size-6 @[16rem]:size-8', noNativeDrag)} />
                 </button>
               </ContactDialog>
             ) : (
@@ -39,9 +48,10 @@ export function SocialGridCard({ socials, className }: SocialGridCardProps) {
                 target="_blank"
                 rel="noreferrer"
                 aria-label={social.label}
+                draggable={false}
                 className={tileClass}
               >
-                <img src={icons[social.icon]} alt="" className="size-5 invert @[10rem]:size-6 @[16rem]:size-8" />
+                <img src={icons[social.icon]} alt="" draggable={false} className={cn('size-5 invert @[10rem]:size-6 @[16rem]:size-8', noNativeDrag)} />
               </a>
             ),
           )}

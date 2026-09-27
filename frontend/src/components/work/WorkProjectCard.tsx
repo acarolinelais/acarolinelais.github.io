@@ -33,6 +33,7 @@ export function WorkProjectCard({ project }: { project: Project }) {
           <img
             src={project.image}
             alt={`${project.title} preview`}
+            decoding="async"
             className="mt-6 w-full rounded-2xl object-cover"
           />
         )}
