@@ -26,16 +26,8 @@ export function Home() {
 
   const [maestro, byterise, thirdProject] = projects
 
-  // Masonry columns (see ReorderableGrid), each its own independent stack —
-  // this is what gives the page its organic, not-quite-aligned feel: a
-  // column's height is just whatever its own cards add up to, with no shared
-  // row grid forcing alignment across columns.
-  //
-  // Each breakpoint gets its own arrangement rather than being folded down
-  // from the 4-column one, because the designs genuinely differ in *which*
-  // cards sit together, not just how many fit — at 3 columns the map moves
-  // in under the intro card and the avatar moves up beside the date, neither
-  // of which merging whole columns end-to-end could produce.
+  // One arrangement per breakpoint, since the designs differ in which cards
+  // sit together, not just in how many columns fit.
   const columns = useMemo(() => {
     const compact = (...slots: (CardSlot | null)[]) => slots.filter((s): s is CardSlot => s !== null)
 
@@ -80,14 +72,8 @@ export function Home() {
 
     const mapSlot: CardSlot = {
       id: 'map',
-      // A banner spanning two columns on desktop, and a small single-column
-      // strip below that. It can stay small because the bleed in MapCard
-      // crops the embed's chrome *outward* — the card's own face is covered
-      // edge to edge by map tiles at any size.
       aspectRatio: (columnCount) => (columnCount >= 4 ? 1.7 : columnCount === 3 ? 2.4 : 1.9),
-      // Listing the same slot object in two columns is what makes a span
-      // work (see CardSlot.colSpan); it's only listed twice in the 4-column
-      // arrangement below, so the span is scoped to match.
+      // Only listed in two columns in the 4-column arrangement.
       colSpan: (columnCount) => (columnCount >= 4 ? 2 : 1),
       render: () => <MapCard className="size-full" />,
     }
@@ -95,9 +81,6 @@ export function Home() {
     const byteriseSlot = byterise
       ? {
           id: 'project-byterise',
-          // Height is always derived from a single column's width (see
-          // CardSlot.colSpan), so 1 keeps it tall enough for its content
-          // whether or not it's spanning.
           aspectRatio: 1,
           colSpan: (columnCount: number) => (columnCount >= 4 ? 2 : 1),
           render: () => <ProjectCard project={byterise} className="size-full" />,

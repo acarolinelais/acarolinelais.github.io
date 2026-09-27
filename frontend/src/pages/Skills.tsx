@@ -24,12 +24,7 @@ export function Skills() {
 
   const [frontend, backend] = groups
 
-  // Same masonry columns as Home (see ReorderableGrid) — each breakpoint
-  // gets its own arrangement rather than folding down from the 4-column one,
-  // for the same reason Home does: Frontend/Backend read as prominent,
-  // full-width-ish banners on a 2-column phone and a 4-column desktop, but
-  // sit one-per-column at 3, and no amount of column-merging produces that
-  // from a single base layout.
+  // One arrangement per breakpoint, as on Home.
   const columns = useMemo(() => {
     const compact = (...slots: (CardSlot | null)[]) => slots.filter((s): s is CardSlot => s !== null)
 
@@ -55,19 +50,12 @@ export function Skills() {
     }
     const mapSlot: CardSlot = {
       id: 'map',
-      // Same figures as Home's map slot — the embed crops identically
-      // regardless of which page it's on.
       aspectRatio: (columnCount) => (columnCount >= 4 ? 1.7 : columnCount === 3 ? 2.4 : 1.9),
       colSpan: (columnCount) => (columnCount >= 4 ? 2 : 1),
       render: () => <MapCard className="size-full" />,
     }
 
-    // A skill card carries a title, a full sentence of description and a
-    // wrapping icon row. Spanning two columns at 4 and 2 (where it reads as
-    // a headline banner) gives that content room to breathe, so the aspect
-    // ratio there can go wide and short; at 3 columns it stays one column
-    // wide, so the ratio comes back down to leave height for the same
-    // content in a narrower box.
+    // Wide banners at 2 and 4 columns; a single, taller column at 3.
     const skillColSpan = (columnCount: number) => (columnCount === 3 ? 1 : 2)
     const skillAspectRatio = (columnCount: number) =>
       columnCount >= 4 ? 1.3 : columnCount === 3 ? 0.85 : 0.75

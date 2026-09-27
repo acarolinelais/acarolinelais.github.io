@@ -16,14 +16,7 @@
   --color-accent: #185cf7;
   --color-accent-soft: #e7ecff;
 
-  /*
-   * Fallback only, for cards outside the bento grid (Work page, dialogs).
-   * A flat 4rem radius reads as a soft squircle on a 260px desktop card but
-   * turns a phone-sized one into a lozenge, so it scales with the viewport
-   * here. Cards *inside* ReorderableGrid override this per card with a value
-   * derived from their own measured box, which is the accurate version —
-   * card width doesn't track the viewport (see ContributionsCard).
-   */
+  /* Cards inside ReorderableGrid override this with a size-based radius. */
   --radius-card: clamp(2rem, 1rem + 4.5vw, 4rem);
   --radius-pill: 999px;
 
@@ -32,21 +25,12 @@
 }
 
 /*
- * Diagonal white rim light, fading from solid to transparent, used as the
- * 1px "border" on every bento card. Verified in isolation (see
- * conversation) that Chromium here silently drops `backdrop-filter` on ANY
- * element that shares a paint region with a `background-clip: padding-box,
- * border-box` double-layer trick — whether that trick sits on the same
- * element, an ancestor, or even an overlapping sibling. `mask-composite:
- * exclude` carves out the same ring shape without ever touching
- * `background-clip`, so it doesn't trip the bug. Apply to a
- * `pointer-events-none absolute inset-0` overlay that's a SIBLING of the
- * actual blurred/filled element (never its parent or the same node) — see
- * DateCard, IntroCard, SocialGridCard, CircleImageBadge, MapCard, BentoCard,
- * WorkProjectCard, Skills, ThemeToggle.
+ * Gradient rim border for the glass cards. Uses a mask instead of the
+ * background-clip trick, which makes Chromium drop nearby backdrop-filters.
+ * Apply to an absolute overlay that is a sibling of the blurred element.
  */
 @utility border-ring {
-  padding: 1.2px;
+  padding: 1.4px;
   background-image: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0.6),
@@ -59,25 +43,30 @@
   mask-composite: exclude;
 }
 
-/*
- * Page-transition fade for grid cards (see scrollDownVariants in
- * lib/pageTransitions.ts) and Work's project cards. Every card's root is a positioning wrapper whose
- * children are its visual layers (the blurred/filled surface, the
- * border-ring overlay, floating badges), so the fade goes on those layers
- * rather than on any ancestor — an ancestor with opacity < 1 would cut the
- * surfaces' backdrop-filter off from the page background mid-fade.
- */
+/* Page-transition fade applied to each card's layers (see lib/pageTransitions.ts). */
 .card-fade > * > * {
   opacity: var(--card-fade, 1);
 }
 
-/*
- * Scoped dark mode: flips the solid content-card surface (ProjectCard,
- * Skills cards, dialogs) and their text via the `--color-*` variables below.
- * The glass cards use a separate `dark:bg-black/5` override on each
- * component instead, since their tint (not just a CSS variable) needs to
- * flip from a light to a dark wash over the photo background.
- */
+/* Marks the project opened from a card on Home. */
+.project-highlight {
+  outline: 2px solid transparent;
+  animation: project-highlight 2.4s ease-out 0.4s both;
+}
+
+@keyframes project-highlight {
+  0%,
+  100% {
+    outline-color: transparent;
+    outline-offset: 12px;
+  }
+  20%,
+  65% {
+    outline-color: rgb(255 255 255 / 0.85);
+    outline-offset: 4px;
+  }
+}
+
 .dark {
   --color-ink: #f5f4f7;
   --color-ink-soft: #c7c3ce;
@@ -88,14 +77,7 @@
 }
 
 @layer base {
-  /*
-   * Smooths the dark/light toggle: `.dark` swaps the --color-* variables
-   * above instantly, and any element reading them (bg-cream, text-ink,
-   * border-color below, ...) would otherwise snap to the new value the
-   * same frame. Transitioning color-related properties on every element
-   * makes that swap fade instead. Scoped to color/border/fill so it never
-   * touches the transform/opacity properties Framer Motion is animating.
-   */
+  /* Fades color changes when switching themes. */
   *,
   ::before,
   ::after {

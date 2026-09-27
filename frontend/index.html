@@ -9,6 +9,14 @@
       content="Caroline Lais — software developer and designer blending technology and creativity."
     />
     <title>Caroline Lais</title>
+    <!-- Applies the theme before first paint so there's no light flash in dark mode. -->
+    <script>
+      var t = null
+      try { t = localStorage.getItem('theme-override') } catch (e) {}
+      if (t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark')
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

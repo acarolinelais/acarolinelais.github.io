@@ -3,21 +3,56 @@ import { useEffect, useState } from 'react'
 import { icons } from '@/assets/icons'
 import { cn } from '@/lib/utils'
 
-const STORAGE_KEY = 'theme'
+// Only set while the chosen theme differs from the system's, so picking the
+// system's theme again goes back to following it. Keep in sync with the
+// inline script in index.html.
+const STORAGE_KEY = 'theme-override'
 type Theme = 'light' | 'dark'
 
-function getInitialTheme(): Theme {
-  const stored = localStorage.getItem(STORAGE_KEY)
-  return stored === 'dark' ? 'dark' : 'light'
+const systemDark = window.matchMedia('(prefers-color-scheme: dark)')
+
+function getSystemTheme(): Theme {
+  return systemDark.matches ? 'dark' : 'light'
+}
+
+function getOverride(): Theme | null {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    return stored === 'dark' || stored === 'light' ? stored : null
+  } catch {
+    return null
+  }
+}
+
+function setOverride(theme: Theme | null) {
+  try {
+    if (theme) localStorage.setItem(STORAGE_KEY, theme)
+    else localStorage.removeItem(STORAGE_KEY)
+  } catch {
+    // Storage unavailable: the choice just lasts for this visit.
+  }
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme)
+  const [theme, setTheme] = useState<Theme>(() => getOverride() ?? getSystemTheme())
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
-    localStorage.setItem(STORAGE_KEY, theme)
   }, [theme])
+
+  useEffect(() => {
+    const onSystemChange = () => {
+      if (!getOverride()) setTheme(getSystemTheme())
+    }
+    systemDark.addEventListener('change', onSystemChange)
+    return () => systemDark.removeEventListener('change', onSystemChange)
+  }, [])
+
+  function toggle() {
+    const next: Theme = theme === 'dark' ? 'light' : 'dark'
+    setTheme(next)
+    setOverride(next === getSystemTheme() ? null : next)
+  }
 
   const isDark = theme === 'dark'
 
@@ -26,7 +61,7 @@ export function ThemeToggle() {
       type="button"
       aria-label="Toggle dark mode"
       aria-pressed={isDark}
-      onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+      onClick={toggle}
       className="relative flex size-11 items-center justify-center rounded-full transition-all hover:scale-105"
     >
       <div

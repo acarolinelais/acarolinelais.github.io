@@ -27,13 +27,6 @@ import iWonder from './I Wonder.jpg'
 import whisperMyName from './Whisper My Name.jpg'
 
 export const images = {
-  abstractBg,
-  abstractBg2,
-  abstractBg3,
-  abstractBg4,
-  abstractBg5,
-  abstractBg6,
-  abstractBg7,
   architechProject,
   asItWas,
   avatar,
@@ -49,10 +42,7 @@ export const images = {
   whisperMyName,
 }
 
-// Each background is paired with a ~250-byte, 32px-wide copy of itself.
-// That's under Vite's asset inline limit, so it ships as a data: URI inside
-// the JS bundle and can paint (blurred) on the very first frame, while the
-// full-size image — still a few hundred KB — downloads behind it.
+// Each background has a tiny placeholder, inlined by Vite, shown while it loads.
 export const abstractBackgrounds = [
   { src: abstractBg, placeholder: abstractBgPlaceholder },
   { src: abstractBg2, placeholder: abstractBg2Placeholder },

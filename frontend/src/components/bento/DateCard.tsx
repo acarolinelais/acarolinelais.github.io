@@ -39,8 +39,6 @@ export function DateCard({ className }: DateCardProps) {
           </span>
         </div>
         <div className="min-w-0">
-          {/* The longest weekday ("Wednesday") is ~9 characters, which at the
-              desktop 3xl would run past the edge of a phone-width card. */}
           <span className="block truncate text-base font-regular text-white @[10rem]:text-lg @[13rem]:text-2xl @[16rem]:text-3xl">
             {weekday}
           </span>

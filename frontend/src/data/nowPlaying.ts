@@ -6,9 +6,7 @@ export interface Track {
   cover: string
 }
 
-// No public API exposes "currently playing" for a YouTube Music account,
-// so this rotates through a small curated list instead of syncing live —
-// update this list whenever you want the card to show something else.
+// Curated list: YouTube Music has no public "now playing" API.
 export const nowPlayingTracks: Track[] = [
   {
     title: 'Blinding Lights',

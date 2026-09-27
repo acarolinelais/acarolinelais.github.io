@@ -1,7 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom'
 
 import { icons } from '@/assets/icons'
-import { cn } from '@/lib/utils'
+import { cn, noNativeDrag } from '@/lib/utils'
 
 const NAV_ITEMS = [
   { to: '/', label: 'Home', icon: icons.homeWhite },
@@ -28,7 +28,11 @@ export function Sidebar() {
                 to={item.to}
                 end={item.to === '/'}
                 aria-label={item.label}
-                className="group relative flex h-11 w-fit items-center overflow-hidden rounded-full shadow-card transition-shadow duration-300 hover:shadow-float"
+                draggable={false}
+                className={cn(
+                  'group relative flex h-11 w-fit items-center overflow-hidden rounded-full shadow-card transition-shadow duration-300 hover:shadow-float',
+                  noNativeDrag,
+                )}
               >
                 <span
                   className={cn(
@@ -42,7 +46,8 @@ export function Sidebar() {
                     src={item.icon}
                     alt=""
                     aria-hidden
-                    className="size-5 object-contain"
+                    draggable={false}
+                    className={cn('size-5 object-contain', noNativeDrag)}
                   />
                 </span>
                 <span className="relative grid grid-cols-[0fr] transition-[grid-template-columns] duration-300 ease-out group-hover:grid-cols-[1fr]">

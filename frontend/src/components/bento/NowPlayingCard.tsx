@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
 import { nowPlayingTracks } from '@/data/nowPlaying'
-import { cn } from '@/lib/utils'
+import { cn, noNativeDrag } from '@/lib/utils'
 
 interface NowPlayingCardProps {
   className?: string
@@ -32,8 +32,6 @@ export function NowPlayingCard({ className }: NowPlayingCardProps) {
       )}
     >
       <div className="absolute inset-0 flex flex-col overflow-hidden rounded-card bg-white/5 p-2 backdrop-blur-xl @[13rem]:p-3 dark:bg-black/5">
-        {/* The top corners have to stay concentric with the card's own
-            radius, so the inset tracks whatever padding is in play. */}
         <div className="relative flex-1 overflow-hidden rounded-t-[calc(var(--radius-card)-0.5rem)] rounded-b-2xl @[13rem]:rounded-t-[calc(var(--radius-card)-0.75rem)] @[13rem]:rounded-b-4xl">
           <AnimatePresence mode="wait">
             <motion.img
@@ -44,11 +42,7 @@ export function NowPlayingCard({ className }: NowPlayingCardProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: { duration: 0.4 } }}
               exit={{ opacity: 0, transition: { duration: 0.3 } }}
-              // The card itself is drag-reorderable — without these, a
-              // press-and-hold on the cover art starts the browser's own
-              // native image drag (or, on touch, the save-image callout)
-              // instead of the grid's drag gesture.
-              className="absolute inset-0 size-full touch-none object-cover select-none [-webkit-touch-callout:none] [-webkit-user-drag:none]"
+              className={cn('absolute inset-0 size-full touch-none object-cover', noNativeDrag)}
             />
           </AnimatePresence>
         </div>
@@ -61,7 +55,6 @@ export function NowPlayingCard({ className }: NowPlayingCardProps) {
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
             className="px-2 pb-2 pt-2 @[13rem]:px-4 @[13rem]:pb-3 @[13rem]:pt-3 @[16rem]:px-5"
           >
-            {/* `text-md` isn't a Tailwind size — it was silently a no-op. */}
             <p className="truncate text-center text-[11px] font-regular text-white @[13rem]:text-sm @[16rem]:text-base">
               {track.title}
             </p>

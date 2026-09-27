@@ -1,11 +1,7 @@
 import { images } from '@/assets/images'
 import type { Project, SkillGroup, SocialLink } from '@/types/content'
 
-/**
- * Local fallback content, used whenever the FastAPI backend is unreachable
- * (e.g. static hosting with no API deployed yet). Mirrors the shape the
- * backend returns so pages render identically either way.
- */
+// Used when the API is unreachable. Mirrors the backend's data.
 export const fallbackProjects: Project[] = [
   {
     slug: 'maestro',

@@ -1,5 +1,6 @@
 import { icons } from '@/assets/icons'
 import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 import type { Project } from '@/types/content'
 
 const STATUS_LABEL: Record<Project['status'], string> = {
@@ -8,11 +9,20 @@ const STATUS_LABEL: Record<Project['status'], string> = {
   'coming-soon': 'Coming soon',
 }
 
-export function WorkProjectCard({ project }: { project: Project }) {
+interface WorkProjectCardProps {
+  project: Project
+  highlighted?: boolean
+}
+
+export function WorkProjectCard({ project, highlighted = false }: WorkProjectCardProps) {
   return (
-    <article className="relative rounded-card shadow-card transition-transform duration-300 ease-out hover:-translate-y-1">
-      {/* Work is a single full-width column below lg, so p-10 left very
-          little room for the description on a phone. */}
+    <article
+      id={`project-${project.slug}`}
+      className={cn(
+        'relative scroll-mt-28 rounded-card shadow-card transition-transform duration-300 ease-out hover:-translate-y-1 sm:scroll-mt-32 lg:scroll-mt-36',
+        highlighted && 'project-highlight',
+      )}
+    >
       <div className="flex flex-col rounded-card bg-white/5 p-6 backdrop-blur-xl sm:p-8 lg:p-10 dark:bg-black/5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">

@@ -6,8 +6,7 @@ interface ContributionsCardProps {
 
 const COLUMNS = 11
 
-// Decorative, not real GitHub data — a fixed pattern rather than random so
-// it reads as an intentional graph instead of noise.
+// Decorative pattern, not real GitHub data.
 const LEVELS = [
   [2, 3, 0, 1, 4, 2, 0, 1, 3, 0, 1],
   [1, 4, 2, 0, 3, 4, 1, 0, 2, 4, 0],
@@ -20,21 +19,11 @@ const LEVELS = [
 
 const LEVEL_COLORS = ['#d7d7d7a8', '#0e4429f0', '#006d33f0', '#26a642ef', '#39d353eb']
 
-// Every dot row and the axis labels underneath have to share one set of
-// column tracks or they drift out of alignment as the card resizes.
+// Shared by the dot rows and the axis labels so they stay aligned.
 const gridColumns = { gridTemplateColumns: `repeat(${COLUMNS}, minmax(0, 1fr))` }
 
-/*
- * Sized by container queries (`@container` on the root, `@[...]` on the
- * contents) rather than viewport breakpoints, because this card's width
- * doesn't track the viewport monotonically: the grid drops from 4 columns to
- * 3 to 2 as the window narrows, and each drop makes every card *wider*
- * again. A card is ~130px at 320px wide, ~310px just before the 3-column
- * switch, then back down to ~200px just after it — so an `sm:`/`lg:` ladder
- * would apply the roomy styles at exactly the widths where the card is
- * smallest. Eleven columns of dots plus an axis is the densest thing on the
- * page, so it's the first to break when that happens.
- */
+// Container queries rather than viewport breakpoints: card width doesn't
+// track the viewport, since fewer grid columns make each card wider again.
 export function ContributionsCard({ className }: ContributionsCardProps) {
   return (
     <div
@@ -59,9 +48,7 @@ export function ContributionsCard({ className }: ContributionsCardProps) {
           </div>
         </div>
 
-        {/* min-h-0 + overflow-hidden so that if the dots ever can't fit the
-            remaining height, the grid clips instead of growing and shoving
-            the axis labels out through the bottom of the card. */}
+        {/* Clips instead of pushing the axis labels out of the card. */}
         <div className="mt-2 flex min-h-0 flex-1 items-center overflow-hidden @[13rem]:mt-3 @[16rem]:mt-4">
           <div
             className="grid w-full gap-[3px] @[10rem]:gap-1 @[13rem]:gap-1.5 @[16rem]:gap-x-1.5 @[16rem]:gap-y-2"
@@ -96,4 +83,3 @@ export function ContributionsCard({ className }: ContributionsCardProps) {
     </div>
   )
 }
-  

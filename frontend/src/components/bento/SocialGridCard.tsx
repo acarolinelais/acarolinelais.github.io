@@ -1,6 +1,6 @@
 import { icons } from '@/assets/icons'
 import { ContactDialog } from '@/components/ContactDialog'
-import { cn } from '@/lib/utils'
+import { cn, noNativeDrag } from '@/lib/utils'
 import type { SocialLink } from '@/types/content'
 
 interface SocialGridCardProps {
@@ -8,17 +8,12 @@ interface SocialGridCardProps {
   className?: string
 }
 
-// select-none + no native drag/callout on the tiles *and* their icons: this
-// card is drag-reorderable, and a press-and-hold that starts on a tile
-// otherwise begins the browser's own link/image drag (or text selection,
-// or the touch save/open callout) instead of the grid's gesture — see the
-// same treatment on CircleImageBadge's avatar.
-const noNativeDrag = 'select-none [-webkit-touch-callout:none] [-webkit-user-drag:none]'
-
 const tileClass = cn(
   'flex items-center justify-center rounded-full bg-white/15 transition-colors hover:bg-white/25',
   noNativeDrag,
 )
+
+const iconClass = cn('size-5 invert @[10rem]:size-6 @[16rem]:size-8', noNativeDrag)
 
 export function SocialGridCard({ socials, className }: SocialGridCardProps) {
   return (
@@ -38,7 +33,7 @@ export function SocialGridCard({ socials, className }: SocialGridCardProps) {
                   aria-label={social.label}
                   className={tileClass}
                 >
-                  <img src={icons.mail} alt="" draggable={false} className={cn('size-5 invert @[10rem]:size-6 @[16rem]:size-8', noNativeDrag)} />
+                  <img src={icons.mail} alt="" draggable={false} className={iconClass} />
                 </button>
               </ContactDialog>
             ) : (
@@ -51,7 +46,7 @@ export function SocialGridCard({ socials, className }: SocialGridCardProps) {
                 draggable={false}
                 className={tileClass}
               >
-                <img src={icons[social.icon]} alt="" draggable={false} className={cn('size-5 invert @[10rem]:size-6 @[16rem]:size-8', noNativeDrag)} />
+                <img src={icons[social.icon]} alt="" draggable={false} className={iconClass} />
               </a>
             ),
           )}

@@ -8,8 +8,6 @@ interface SkillCardProps {
   className?: string
 }
 
-// Container-queried rather than viewport-queried — see the note in
-// ContributionsCard for why card width doesn't track the viewport.
 export function SkillCard({ group, className }: SkillCardProps) {
   return (
     <BentoCard className={cn('@container', className)}>
